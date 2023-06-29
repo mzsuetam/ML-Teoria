@@ -1,0 +1,35 @@
+title: |
+  ![](assets/logo.png){width=8cm} \
+  Uczenie Maszynowe
+subtitle: 'Teoria'
+author:
+  - 'Joe Mama'
+  - 'Mike Hawk'
+  - 'Nick Ger'
+  - 'Hugh Jass'
+  - 'Bic Didz'
+  - 'Mike Oxlong'
+  - 'Geega Neega'
+  - 'Sleepy "Slippy" Joe (oceń w końcu kolosy)'
+date: 'June 29, 2023'
+abstract: 'W niniejszym dokumencie przedstawiamy podsumowanie teoretyczne kursu z uczenia maszynowego. Kurs ten obejmuje klasyczne algorytmy uczenia maszynowego dotyczące zagadnień takich jak regresja, klasyfikacja, klastrowanie, redukcja wymiarów i wyszukiwanie wzorców. Uczestnicy kursu dowiedzą się również o działaniu sieci neuronowych i poznają charakterystykę podstawowych typów sieci. W ramach kursu poruszane są również podstawowe problemy, które mogą pojawić się podczas uczenia maszynowego, a uczestnicy zdobędą wiedzę na temat ich matematycznych przyczyn. Będą w stanie dobrać odpowiedni algorytm uczenia maszynowego w zależności od konkretnego zagadnienia i dostępnych danych. Ponadto, kurs obejmuje tematy związane z walidacją modelu i rozwiązywaniem typowych problemów, które mogą pojawić się podczas trenowania modelu. Uczestnicy zdobędą umiejętność przeprowadzania walidacji modelu oraz rozwiązywania występujących trudności.'
+fontsize: 11pt
+links-as-notes: true
+header-includes:
+  - \usepackage[margin=2cm]{geometry}
+  - \usepackage{graphicx}
+  - \usepackage[export]{adjustbox}
+  - \setkeys{Gin}{width=0.7\textwidth}
+  - \usepackage{setspace}
+  - \onehalfspacing
+  - \usepackage{titlesec}
+  - \titleformat{\section}[block]{\newpage\large\bfseries}{\thesection}{1em}{}
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyfoot{}
+  - \fancyhead{}
+  - \fancyhead[L]{ \nouppercase{\leftmark} }
+  - \fancyhead[R]{ \rightmark }
+  - \fancyfoot[C]{\thepage}
+  - \renewcommand{\headruleskip}{2mm}
+  - \setlength{\headheight}{21pt}
