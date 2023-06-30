@@ -518,9 +518,25 @@ Softmax - funkcja aktywacji wykorzystywana w warstwie wyjściowej klasyfikatoró
 
 ![Niektóre funkcje aktywacji wykorzystywane w sieciach neuronowych](assets/funkcje-aktywacji.png)
 
-### Którą funkcję aktywacji użyć?
+### Którą funkcję aktywacji użyć? 
 
-1. SeLU
+Wiedza tak trochę ponadprogramowa ale lepiej wiedzieć :>
+
+1. SeLU 
+* Najlepsze dla *Głębokiej Sieci Neuronowej* 
+* Potrafi się samodzielnie znormalizować
+  * Rozwiązuje problem znikających i eksplodujących gradientów.
+* Warunki zbioru danych:
+  * Wszystkie warstwy muszą być gęste
+  * Dane muszą być standaryzowane
+    * średnia = 0
+    * $\delta$ = 1
+  
+2. ELU
+3. Leaky ReLU
+4. ReLU
+5. tanh
+6. logistic
 
 ## Warstwy
 
@@ -583,8 +599,23 @@ Po utworzeniu modelu należy go skompilować za pomocą metody ```compile()```. 
   * ***SGD*** - Stochastic Gradient Descent
   * ***Momentum*** - SGD z pędem
   * ***Nesterov Accelerated Gradient*** - SGD z pędem Nesterova
+    * Szybka zbieżność
+    * Minimalnie szybsza od *Momentum*
   * ***AdaGrad*** - Adaptive Gradient, nie wykorzystuje pędu, ale dostosowuje współczynnik uczenia dla każdego parametru na podstawie jego historii aktualizacji
+    * Działa dobrze dla prostych problemów kwadratowych
+    * Ryzyko nie osiągnięcia minimum
   * ***Adam*** - Adaptive Moment Estimation, wykorzystuje pęd i historię aktualizacji
+    * Wariancje  *Adam*:
+      * **Nadam**:
+        * Adam + Nesterov
+        * Generalnie jest lepsza od *Adam*
+  * ***RMSProp*** - Zbiera gradienty tylko z najwcześniejszych iteracji
+    * Wiele lepszy niż *AdGrad*
+
+## Problemy *Adaptive estimation methods*
+
+* Może źle generalizować zbiory danych
+* Jak są jakieś problemy użyj *Nesterov Accelerated Gradient* 
 
 * ```loss```: Określa **funkcję straty**, która jest używana do oceny odchylenia między przewidywaniami modelu a rzeczywistymi wartościami. Przykładowe funkcje straty to 'mean_squared_error', 'categorical_crossentropy', 'binary_crossentropy' itp. Wybór odpowiedniej funkcji straty zależy od rodzaju problemu i rodzaju wyjścia modelu.
 
@@ -628,6 +659,8 @@ history = model.fit(
 ```
 
 ## Callbacks
+
+* Użyteczne jak mamy długi czas uczenia
 
 Callbacki pozwalają na wykonywanie dodatkowych operacji w trakcie uczenia modelu. Przykładowe zastosowania:
 
@@ -680,7 +713,10 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 ### SciKit-Learn
 
 * ```RandomizedSearchCV``` - losowe przeszukiwanie przestrzeni hiperparametrów
+  * Lepsze od GridSearch
 * ```GridSearchCV``` - przeszukiwanie przestrzeni hiperparametrów siatką wartości parametrów
+  * Wydajny gdy funkcja jest szybka w obliczeniu. (Model mało skomplikowany)
+* Jak mamy bardziej złożony model to polecam bibliotekę *Optuna*
 
 ### Keras Tuner
 
@@ -691,9 +727,14 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 
 * CNN są stosowane do przetwarzania wielowymiarowych danych, takich jak obrazy, wideo itp.
 * Wykorzystują specjalny rodzaj warstwy zwanej warstwą konwolucyjną (Convolutional Layer), która wykonuje operację konwolucji na danych wejściowych.
+* Wymagają mniejszej liczby parametrów (względem *DNN*).
+* Rozbijamy większy problem (np. rozpoznawanie obrazów) na mniejsze prostsze problemy (np. wykrywanie krawędzi).
 
 ## Konwolucja
 
+* Struktura Hierarchiczna.
+* Zamiast 1 wielkiej warstwy używamy wielu tych samych, małych liniowych warstw w każdej pozycji.
+* koncentruje się na niskopoziomowych cechach w początkowych ukrytych warstwach, w kolejnej warstwie agreguje je do większej wysokopoziomowej cechy.
 * Konwolucja to operacja matematyczna, która łączy dwa zestawy danych za pomocą funkcji matematycznej, aby wygenerować trzeci zestaw danych.
 * W przypadku konwolucyjnych sieci neuronowych operacją konwolucji jest iloczyn skalarny (mnożenie element-wise) dwóch zestawów danych.
 * Konwolucja jest operacją liniową, która może być używana do wielu celów, takich jak wykrywanie krawędzi i innych wzorców w obrazach, wykrywanie cech w danych itp.
@@ -707,8 +748,16 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 
 ![Przykład prostej sieci konwolucyjnej](assets/convolution.png)
 
+## Typowe błędy podczas projektowania CNN
+
+* Stosowanie za dużych jądr konwolucji (Wyjątek: Pierwsza warstwa konwolucyjna)
+  * Zamiast tego nałóż więcej mniejszych warstw
+    * Prowadzi to do mniejszej liczby parametrów i mniejszej liczby obliczeń.
+
 ## Pooling
 
+* Pooling neuron nie posiada wagi
+  * Jej celem jest agregacja wejść korzystając z funkcji *max* lub *mean*.
 * Pooling jest operacją, która zmniejsza wymiary danych wejściowych poprzez zastąpienie fragmentu danych wejściowych pojedynczą wartością reprezentującą ten fragment zwracaną przez sprecyzowaną wcześniej funkcję
 * Najczęściej stosowaną funkcją agregującą jest funkcja max, która zwraca maksymalną wartość w fragmencie danych wejściowych
 * Pozwala kolejnym warstwom sieci na wykrywanie cech bardziej ogólnych, poprzez zwielokrotnienie obszaru, na którym bezpośrednio działają
@@ -717,7 +766,9 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 
 ## Dropout
 
-* Dropout jest techniką regularyzacji, która losowo zeruje niektóre wyjścia warstwy podczas treningu modelu
+* Sprawia, że wielka sieć działa jak mniejsza losowo trenując podsekcje sieci.
+  * __*Mniejsze sieci neuronowe nie mają skłonności do przeuczenia*__
+* Dropout jest techniką regularyzacji, która losowo wyłącza neurony podczas uczenia
 * Pomaga w zapobieganiu przeuczeniu modelu.
 
 ## Uczenie rezydualne (Residual Learning)
@@ -725,36 +776,98 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 * Residual Learning jest techniką uczenia głębokich sieci neuronowych, która skupia się na uczeniu różnic (residuum) pomiędzy wartością rzeczywistą a przewidywaną
 * Residual Learning pomaga w zapobieganiu zanikaniu gradientu (vanishing gradient) i przyspiesza proces uczenia modelu
 * Wykorzystujemy obejście (skip connection), aby dodać dane wejściowe do danych wyjściowych warstwy, aby uzyskać dane wyjściowe warstwy rezydualnej.
+  * Sieć zaczyna robić progres nawet kiedy niektóre warstwy sieci nie zaczęły procesu uczenia.
 
-## Lokalizaacja obiektów
+## Klasyfikacja i Lokalizacja obiektów
 
 * Lokalizacja obiektów jest techniką uczenia głębokich sieci neuronowych, która służy do wykrywania obiektów w konkretnej lokalizacji na obrazie
 * Można wykorzystać sieci w pełni konwolucyjne (Fully Convolutional Networks) do lokalizacji obiektów, wtedy każdy element wyjściowej macierzy reprezentuje prawdopodobieństwo wystąpienia obiektu w określonym obszarze obrazu
 * Inną metodą jest wykorzystanie przesuwanego okna (sliding window), która polega na przesuwaniu okna po obrazie i sprawdzaniu, czy w oknie znajduje się obiekt, wymaga to wielokrotnego przetwarzania obrazu, co jest bardzo kosztowne obliczeniowo oraz różnych rozmiarów okna, aby wykryć obiekty o różnych rozmiarach
 
-## Segmentacja semantyczna
+### Bounding Boxes
 
-* Segmentacja semantyczna jest problemem, który polega na przypisaniu każdemu pikselowi obrazu etykiety, która reprezentuje klasę, do której należy dany piksel
-* Można w tym celu stosować architekturę U-Net, która składa się z warstw konwolucyjnych, warstw poolingowych i warstw dekonwolucyjnych twojącą symetryczną strukturę w kształcie litery U.
+* Sieci takie nazywamy *Region Proposal Network*.
+* Gdy zaklasyfikujemy pewien obiekt i chcemy go zlokalizować na obrazie stosujemy *Bounding Boxes*- czyli określamy prostokątem fragment obrazu w którym najprawdopodobniej znajduje się obiekt.
+* *non-max suppression*
+  * Usuwamy nadmierną detekcje tego samego obiektu.
 
+![Wizualizacja wyniku działania non-max suppression](assets/non-max-suppression.png)
+
+### Fully Convolutional Networks
+
+* Może być przećwiczona i użyta dla obrazów dowolnej wielkości
+
+### YOLO You Only Look Once
+
+* Szybkie i dokładne
+* Działa w czasie rzeczywistym
+
+### *Transponowana warstwa konwolucyjna* (*Transposed Convolutional Layer*)
+
+  * Może wykonywać interpolację liniową
+  * Warstwa którą możemy trenować
+  * Rozciąga zdjęcia przez dodawanie pustych wierszy i kolumn
+
+### Segmentacja semantyczna
+  
+  * Segmentacja semantyczna jest problemem, który polega na przypisaniu każdemu pikselowi obrazu etykiety, która reprezentuje klasę, do której należy dany piksel
+  * Można w tym celu stosować architekturę U-Net, która składa się z warstw konwolucyjnych, warstw poolingowych i warstw dekonwolucyjnych twojącą symetryczną strukturę w kształcie litery U.
+  * Różne obiekty tej samej klasy nie są rozróżnialne.
+
+### Metryki:
+  
+  * *Mean Average Precision*
+  * *Intersection over Union*
+    * Sprawdza jak dobrze model przewiduje *pola ograniczające* (bounding boxes).
 
 # Rekurencyjne sieci neuronowe (RNN - Recurrent Neural Networks)
 
 * RNN są stosowane do przetwarzania sekwencyjnych danych, takich jak tekst, dźwięk, czasowe serie danych itp.
-* Często wykorzystywane do predykcji na podstawie sekwencji  danych wejściowych (o dowolnej długości), najczęściej do przewidywania przyszłości.
+* Wykonują przewidywania dla sekwencji o dowolnej długości.
+* Często wykorzystywane do predykcji na podstawie sekwencji danych wejściowych (o dowolnej długości), najczęściej do przewidywania przyszłości.
 * Wykorzystują specjalny rodzaj warstwy zwanej warstwą rekurencyjną (Recurrent Layer), która przechowuje stan wewnętrzny, który jest aktualizowany za każdym razem, gdy warstwa otrzymuje dane wejściowe.
+* Sieć wykonuje tą samą operację na każdym elemencie sekwencji, po czym agreguje informacje poprzednich wyrażeń w celu przewidzenia następnego.
 * Zastosowania: finanse (giełda), pojazdy autonomiczne, sterowanie, wykrywanie usterek
+* __*Dużą wadą są znikające i eksplodujące gradienty*__
+  * gradient $\approx$ 0 lub zmieża do $\infty$.
+* Gdy sekwencja danych jest bardzo długa, sieć zapomina początkowe wartości
 
 Podstawowym elementem RNN jest komórka rekurencyjna, która ma stan wewnętrzny przechowujący informacje z poprzednich **kroków czasowych (ramek)**. W każdym kroku czasowym komórka otrzymuje dane wejściowe oraz stan wewnętrzny (z poprzedniego kroku) i generuje nowy stan wewnętrzny oraz dane wyjściowe. Ten proces jest powtarzany dla każdego kroku czasowego.
 
-Istnieje kilka różnych typów RNN, takich jak **SimpleRNN**, **LSTM** (Long Short-Term Memory) i **GRU** (Gated Recurrent Unit), które różnią się w sposobie zarządzania i aktualizacji stanu wewnętrznego. Na przykład, LSTM wprowadza bramki, które kontrolują przepływ informacji, pozwalając na efektywne uczenie się zależności na różnych skalach czasowych i unikanie problemu zanikającego gradientu.
+Istnieje kilka różnych typów RNN, takich jak **SimpleRNN**, **LSTM** (Long Short-Term Memory), **GRU** (Gated Recurrent Unit) i **Bidirectional RNN**, które różnią się w sposobie zarządzania i aktualizacji stanu wewnętrznego. Na przykład, LSTM wprowadza bramki, które kontrolują przepływ informacji, pozwalając na efektywne uczenie się zależności na różnych skalach czasowych i unikanie problemu zanikającego gradientu.
 
-Działanie RNN można podsumować w kilku krokach:
+## Rodzaje RNN ze względu na rodzaj danych wejściowych/wyjściowych
+
+### Sequence to sequence network
+
+* Pobiera sekwencje danych wejściowych i generuje sekwencję przewidywanych danych.
+
+### Vector to sequence network
+
+* Podaje ten sam wektor danych wejściowych w każdym kroku czasowym i generuje sekwencję przewidywanych danych.
+* Dekodera.
+
+### Sequence to vector network
+
+* Podaj sekwencję danych wejściowych i zignoruj wygenerowaną sekwencję przewidywanych danych poza ostatnią wartością.
+* Enkoder.
+
+## Działanie RNN w kilku krokach:
 
 * Dane wejściowe sekwencyjne są podzielone na kroki czasowe.
 * Na każdym kroku czasowym, dane wejściowe są przetwarzane przez komórkę rekurencyjną, która aktualizuje swój stan wewnętrzny.
 * Dane wyjściowe są generowane na podstawie aktualnego stanu wewnętrznego.
 * Proces jest powtarzany dla kolejnych kroków czasowych, przekazując informacje z poprzednich kroków.
+
+## Przewidywanie kilku kroków czasowych do przodu
+
+* Rozróżniamy 3 najpopularniejsze sposoby:
+  * Model przewiduje 1 krok czasowy na raz
+    * Wyjście modelu prowadzimy do wejścia modelu
+    * Najgorsza opcja, błąd jest akumulowany za każdym cyklem
+  * Model przewiduje $n$ kroków na raz
+  * Model przewiduje wszystkie kroki na raz
+    * Najlepiej ją stosować
 
 ## Unrolling (rozwijanie) 
 
@@ -762,3 +875,15 @@ Proces rozwinięcia lub dekompresji sieci rekurencyjnej na wielu krokach czasowy
 
 Podczas unrollingu, sieć rekurencyjna jest rozwinięta wzdłuż osi czasu, tworząc sekwencję powiązanych ze sobą jednostek. Każda jednostka reprezentuje stan wewnętrzny (np. LSTM lub GRU) oraz warstwę wyjściową, która otrzymuje dane wejściowe z danego kroku czasowego i generuje dane wyjściowe dla tego kroku. Te powiązane jednostki są połączone ze sobą, przechodząc informacje z jednego kroku czasowego do drugiego.
 
+## Osadzenia
+
+* Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej długości.
+
+## Rozwiązanie problemu niestabilnych gradientów
+
+* Użyj tych samych rozwiązań co w przypadku *DNN*
+* Nie stosuj nienasyconych funkcji aktywacji
+  * np. ReLU
+* *Batch Normalization* nie jest przydatne
+  * Jak już musisz to stosuj pomiędzy warstwami rekurencyjnymi
+* *Layer Normalization*
