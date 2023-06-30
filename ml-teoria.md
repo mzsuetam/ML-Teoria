@@ -1,6 +1,7 @@
 # Rodzaje uczenia maszynowego
 
 Podziały ze względu na:
+
 * nadzór:
   * **uczenie nadzorowane** - trzeba etykietować zbiór uczący
   * **uczenie nienadzorowane** - nie trzeba etykietować zbioru uczącego (uczenie bez nauczyciela)
@@ -12,6 +13,8 @@ Podziały ze względu na:
 * dostęp do danych:
   * **batch** - posiadamy dostęp do kompletnego zbioru danych, jeśli możemy trzymać cały zbiór danych i dane nie zmieniają się zbyt często
   * **online (mini-batches)** - karmimy model ciągle małymi porcjami danych, jeśli nie mamy miejsca na utrzymanie całego zbioru lub dane ciągle się zmieniają
+
+![mapka wyboru algorytmu](assets/wybor-algorytmu.png)
 
 # Metryki
 
@@ -127,6 +130,7 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 * Znajduje minimum lokalne.
 
 Stochastic Gradient Descent:
+
 * Stosowany w przypadku, gdy zbiór danych jest bardzo duży
 * Do obliczania gradientu wybieramy losowo podzbiór danych
 * Znajduje minimum lokalne, szybciej niż *Gradient Descent*, ale nie jest tak dokładny.
@@ -145,7 +149,7 @@ Stochastic Gradient Descent:
 
 ### Variance
 
-* Nadmierna wrażliwość na małą wariancję w zbiorze danych. Prowadzi do *underfittingu*
+* Nadmierna wrażliwość na małą wariancję w zbiorze danych. Prowadzi do *overfittingu*
 * Model jest najprawodopodobniej zbyt skomplikowany.
 
 ### Irreducible Error
@@ -327,6 +331,8 @@ Wykorzystywana jest moc przyjaźni (ang. *Power of friendship*).
 
 # Redukcja Wymiarów
 
+![Rzutowanie danych na inną przestrzeń](assets/rzutowanie.png)
+
 * Stosujemy do uproszczenia zbioru danych w celu przyspieszenia procesu uczenia modelu
 * Prowadzi do utraty części informacji, umożliwiając jednocześnie lepszą wydajność modelu
 * Może być również wykorzystywana do wizualizacji danych.
@@ -334,4 +340,425 @@ Wykorzystywana jest moc przyjaźni (ang. *Power of friendship*).
 ## Curse of Dimensionality
 
 * Odnosi się do zjawiska, w którym dodanie kolejnych wymiarów do zbioru danych powoduje znaczny (eksponencjalny) wzrost wymaganej ilości danych do zachowania odpowiedniej gęstości danych.
+
+## PCA - Principal Component Analysis
+
+![PCA - Principal Component Analysis](assets/PCA1.png)
+
+* Jest to metoda redukcji wymiarów, w której wybieramy kierunki, które zachowują najwięcej informacji
+* Kierunki te są nazywane **principal components**
+* PCA znajduje kierunki, które minimalizują *średnią kwadratową odległość* między punktami danych a ich rzutami na kierunki
+* Staramy się znaleźć takie kierunki, dla których występuje największa wariancja danych
+* Na początku standaryzujemy dane, aby średnie wartości były równe 0
+* Znajdujemy bazę przestrzeni, która jest najbardziej zbliżona do danych pod względem *średniej kwadratowej odległości* dla punktów danych i ich rzutów na bazę
+* Istnieje szybszy algorytm randomizowany, który znajduje przybliżone rozwiązanie.
+
+### SVD - Singular Value Decomposition
+
+* Jest to metoda rozkładu macierzy na iloczyn 3 macierzy
+* Umożliwia wyznaczenie kierunków, które zachowują najwięcej informacji
+* Stosowana w PCA
+* Uogólnienie wartości własnych i wektorów własnych na macierze niekwadratowe
+* Największe wartości singularne odpowiadają kierunkom, które zachowują najwięcej informacji.
+
+## Incremental PCA 
+* minibatch, out-of-core, praca na strumieniach, trzeba podać liczbę wymiarów
+* Czyli w sumie po prostu PCA na online(minibatches), gdzie nie ładujemy całego zestawu danych na raz do modelu
+
+## Rozmaitości
+
+![Rozmaitość - przykład Swiss Roll](assets/rozmaitosc.png)
+
+* Są to zbiory danych, które mogą być zredukowane do mniejszej liczby wymiarów, ale nie muszą być przestrzeniami liniowymi
+* W małej skali wyglądają jak przestrzenie liniowe, ale w większej skali mogą mieć kształty przeróżne
+* Zastosowanie dla nich algorytmu PCA może prowadzić do zbyt intensywnej utraty informacji
+* Istnieją algorytmy, które pozwalają na redukcję wymiarów dla takich zbiorów danych.
+
+### LLE - Locally Linear Embedding
+
+![Swiss Roll po zastosowaniu LLE](assets/rozmaitoscLLE.png)
+
+* Algorytm ten znajduje lokalne zależności między punktami danych, a następnie próbuje zachować te zależności w niższej wymiarowości
+* Jest to algorytm nienadzorowany
+* Może prowadzić do zniekształcenia danych w dużej skali
+* W pierwszym kroku znajduje najbliższych sąsiadów dla każdego punktu danych
+* Następnie znajduje wagi, które pozwalają na rekonstrukcję każdego punktu danych jako kombinacji liniowej jego najbliższych sąsiadów
+* W ostatnim kroku rzutuje dane na przestrzeń o niższej wymiarowości, zachowując lokalne zależności.
+
+# Uczenie nienadzorowane
+
+Kategorie uczenia nienadzorowanego:
+
+* Klasteryzacja *clustering*
+  * identyfikacja klas
+  * redukcja wymiarów
+  * analiza danych (po klasteryzacji, dla każdej klasy osobno)
+  * uczenie częściowo nadzorowane
+  * segemntacja obrazu, detekcja, kompresja
+* Detekcja anomalii
+  * detekcja wartości odstających, *outlierów*
+* Estymacja gęstości *density estimation*
+
+![Podobne do klasyfikacji, ale nie wiadomo ile jest klas](assets/nienadzorowane.png)
+
+## Soft Clustering
+* Przypisuje każdej instancji wynik przypisywany dla każdego klastra.
+  * Wynikiem może być np. dystans pomiędzy instancją a centroidą.
+
+## Hard Clustering
+* Każda instancja jest przypisana do 1 klastra.
+
+## Algorytm centroidów (k-średnich) *K-Means*
+
+* Algorytm centroidów (k-średnich) *K-Means* jest jednym z najpopularniejszych algorytmów klasteryzacji.
+* Algorytm stara się znaleźć środek każdego z *k* skupisk
+* Algorytm ten przypisuje każdy punkt danych do najbliższego centroidu, a następnie przesuwa centroidy tak, aby minimalizować średnią kwadratową odległość między punktami danych a ich centroidami
+* *k* jest parametrem algorytmu, który musi zostać określony przez użytkownika
+* Jest zbieżny
+* Nie gwarantuje znalezienia optimum (zależy od kroku 1)
+  * Domyślnie algorytm uruchamiany jest 10 razy
+  * Wybierany jest model z najmniejszą **inercją**: średnio-kwadratowa odległość między instancjami i ich centroidami
+    * zmierz odległość między instancjami a ich centroidami
+    * zsumuj kwadraty w/w odległości w ramach klastra
+    * zsumuj wartości inercji dla wszystkich klastrów
+* Przedstawieniem wyniku działania algorytmu jest Diagram Woronoja *Voronoi*
+* *K-Means++*
+  * Nowsza wersja
+  * W bardziej optymalny sposób dobiera początkowe centroidy
+* *Mini batch K-Means*
+  * Używa *batch* zamiast całego zbioru danych
+
+![Przykładowy rozkład danych](assets/k-means.png)
+
+![Diagram Woronoja *Voronoi* wyznaczony przez alg. K-Means](assets/k-means-2.png)
+
+### Wyznaczanie liczby klastrów
+
+Do wyznaczenia liczby klastrów nie wystarcza sama inercja, ponieważ maleje ona wraz ze zwiększaniem się liczby klastrów.
+
+![Przykład podziału na niepoprawną liczbę klastrów](assets/k-means-ile-klastrów.png)
+
+**Inercja** nie wystarcza, ale można ją wykorzystać. Wystarczy wyznaczyć inercję dla różnych wartości *k* i wybrać tę, która jest na 'zgięciu' wykresu.\
+
+![Wykorzystanie inercji do wyznaczenia liczby *k*](assets/k-means-inertia.png)
+
+Do wyznaczenia liczby klastrów możemy również wykorzystać **Wskaźnik sylwetkowy, *silhouette score***. Wskaźnik bierze pod uwagę średnią odległość pomiędzy obserwacjami wewnątrz grupy (*a*) i średnią odległość pomiędzy obserwacjami do najbliższej "obcej" grupy (*b*) i dany jest wzorem:
+
+$$ s = \frac{a-b}{max(a,b)} $$
+
+* Najlepsza wartość: 1
+* Najgorsza wartość: -1
+* Nakładające się wartości: w pobliżu 0
+
+![Wykorzystanie wskaźnika sylwetkowego do wyznaczenia liczby *k*](assets/k-means-silhouette.png)
+
+## DBSCAN
+
+* Algorytm DBSCAN (*Density-Based Spatial Clustering of Applications with Noise*) jest algorytmem klasteryzacji, który znajduje skupiska o wysokiej gęstości
+* Algorytm ten znajduje skupiska o wysokiej gęstości, a także punkty odstające
+* Algorytm ten nie wymaga określenia liczby klastrów
+* Wymaga określenia dwóch parametrów: *eps* i *min_samples*
+  * *eps* - maksymalna odległość między dwoma punktami, aby zostały one uznane za sąsiadów
+  * *min_samples* - minimalna liczba punktów, aby uznać je za rdzeń (wliczając w to punkt, dla którego szukamy sąsiadów)
+* Wszystkie instancje, które nie są rdzeniami, ale mają sąsiadów, są uznawane za brzegi, wchodzą w skład tego samego klastra, co ich rdzeń
+* Instancje, które nie są ani rdzeniami, ani brzegami, są uznawane za anomalią (nie należą do żadnego klastra)
+
+![Alt text](assets/dbscan.png)
+
+# Sieci neuronowe - wprowadzenie
+
+## Perceptron
+
+* Składają się z jednej warstwy neuronów
+* Każdy neuron jest jednostką liniową, po której następuje funkcja aktywacji
+* Sposób działania:
+  * oblicz sumę wejść $z = w_1x_1 + w_2x_2 + ... + w_nx_n = x^Tw$
+  * zastosuj funkcję schodkową: $h_w(x) = step(z)$
+* Ograniczenia:
+  * Nie potrafią rozwiązać pewnych trywialnych problemów, np. XOR. W takich przypadkach stosuje się **sieci wielowarstwowe (MLP)**
+
+![Alt text](assets/perceptron.png)
+
+
+### Uczenie perceptronu
+
+* Uczenie perceptronu polega na znalezieniu wektora wag $w$, który pozwoli na poprawne sklasyfikowanie jak największej liczby instancji
+* Wagi są aktualizowane na podstawie błędu predykcji według wzoru $w_{i,j}^{(następna iteracja)} = w_{i,j} + \eta(y_j - \hat{y_j})x_i$
+  * $w_{i,j}$ - waga połączenia między neuronem $i$ a neuronem $j$
+  * $\eta$ - współczynnik uczenia
+  * $y_j$ - wartość oczekiwana
+  * $\hat{y_j}$ - wartość przewidziana
+  * $x_i$ - wartość wejścia
+
+
+## Funkcje aktywacji
+
+### Dlaczego potrzebujemy funkcji aktywacji?
+* Konieczność nieliniowości
+  * Jeżeli używamy liniowych funkcji aktywacji, to kilka nałożonych na siebie warstw jest równoważna z jedną warstwą.
+  * Sieć neuronowa będzie zachowywać się jak jedna warstwa neuronów (dla macierzy $W_1$ i $W_2$ będzie można znaleźć macierz $W$, która będzie równoważna działaniu sieci neuronowej, $W = W_2W_1$)
+* Potrzebujemy dobrze zdefiniowanej niezerowej pochodnej
+  * *Gradient Descent* robi progres w każdym kroku. 
+
+$$ \sigma(z) = \frac{1}{1+e^{-z}} $$
+
+$$ tanh(z) = 2\sigma(2z) - 1 $$
+
+$$ ReLU(z) = max(0, z) $$
+
+$$ LeakyReLU(z) = max(\alpha z, z) $$
+
+$$ ELU(z) = \begin{cases} \alpha (e^z - 1) & \text{if } z < 0 \\ z & \text{if } z \geq 0 \end{cases} $$
+
+$$ SeLU(z) = \begin{cases} \lambda \alpha (e^z - 1) & \text{if } z < 0 \\ \lambda z & \text{if } z \geq 0 \end{cases} $$
+
+$$ Softmax(z)_j = \frac{e^{z_j}}{\sum_{k=1}^K e^{z_k}} $$
+
+Softmax - funkcja aktywacji wykorzystywana w warstwie wyjściowej klasyfikatorów wieloklasowych, generuje rozkład prawdopodobieństwa.
+
+![Niektóre funkcje aktywacji wykorzystywane w sieciach neuronowych](assets/funkcje-aktywacji.png)
+
+### Którą funkcję aktywacji użyć?
+
+1. SeLU
+
+## Warstwy
+
+### Warstwa gęsta
+
+* Każdy neuron jest połączony z każdym neuronem z poprzedniej warstwy
+* Wagi połączeń są zapisane w macierzy wag $W$*
+* Każdy neuron ma dodatkowy parametr $b$, który jest nazywany *biasem* - w innym przypadku dla wektora zerowego na wejściu, na wyjściu otrzymalibyśmy wektor zerowy (jeżeli funkcja aktywacji ma punkt stały w 0)
+
+# Głębokie sieci neuronowe
+
+## Budowa modelu
+
+### Keras Sequential API
+
+* Najprostszy sposób tworzenia sieci neuronowej
+* Zakłada, że sieć jest sekwencją warstw
+* Warstwy dodajemy jako instancje odpowiednich klas z pakietu keras.layers
+* parametr można przekazywać jako ciągi znaków. Jest to zapis uproszczony: zamiast ```"relu"``` można przekazać ```keras.activations.relu```
+* Normalizację danych można wykonać za pomocą warstwy ```keras.layers.Normalization```, lub ```keras.layers.Flatten```, albo zrobić samemu wcześniej
+
+```python
+import tensorflow as tf
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Flatten(input_shape=[28, 28]),
+    tf.keras.layers.Dense(300, activation="relu"),
+    tf.keras.layers.Dense(100, activation="relu"),
+    tf.keras.layers.Dense(10, activation="softmax")
+])
+```
+
+### Keras Functional API
+
+* Pozwala na tworzenie bardziej skomplikowanych architektur sieci neuronowych
+* Pozwala na tworzenie grafów obliczeniowych, w których nie wszystkie warstwy są połączone ze sobą w sekwencji
+* Pozwala na tworzenie wielu modeli, które mają współdzielone warstwy
+* Do tworzenia modelu wykorzystujemy klasę ```tf.keras.Model```, podaje się w niej warstwy wejściowe i wyjściowe
+* Do tworzenia warstw wykorzystujemy klasę ```tf.keras.layers```, podobnnie jak w przypadku ```Sequential``` API
+* Łączenie warstw odbywa się za pomocą operatora ```(warstwa)(wejście)```, podobnie jak w przypadku wywoływania funkcji, co oznacza, że warstwa jest wywoływana na wejściu otrzymanym z poprzedniej warstwy będącej argumentem wywołania
+
+```python
+import tensorflow as tf
+
+input_ = tf.keras.layers.Input(shape=[28, 28])
+flatten = tf.keras.layers.Flatten(input_shape=[28, 28])(input_)
+hidden1 = tf.keras.layers.Dense(300, activation="relu")(flatten)
+hidden2 = tf.keras.layers.Dense(100, activation="relu")(hidden1)
+concat = tf.keras.layers.Concatenate()([input_, hidden2])
+output = tf.keras.layers.Dense(10, activation="softmax")(concat)
+model = tf.keras.Model(inputs=[input_], outputs=[output])
+```
+
+## Kompilacja i uczenie modelu
+
+Po utworzeniu modelu należy go skompilować za pomocą metody ```compile()```. Metoda ta przyjmuje następujące parametry: 
+
+* ```optimizer```: Określa **optymalizator** używany do aktualizacji wag modelu podczas procesu uczenia.Optymalizator reguluje sposób, w jaki model aktualizuje wagi na podstawie straty i algorytmu optymalizacji. Ich argumentem jest m.in. ```learning_rate```. Przykładowe optymalizatory:
+
+  * ***SGD*** - Stochastic Gradient Descent
+  * ***Momentum*** - SGD z pędem
+  * ***Nesterov Accelerated Gradient*** - SGD z pędem Nesterova
+  * ***AdaGrad*** - Adaptive Gradient, nie wykorzystuje pędu, ale dostosowuje współczynnik uczenia dla każdego parametru na podstawie jego historii aktualizacji
+  * ***Adam*** - Adaptive Moment Estimation, wykorzystuje pęd i historię aktualizacji
+
+* ```loss```: Określa **funkcję straty**, która jest używana do oceny odchylenia między przewidywaniami modelu a rzeczywistymi wartościami. Przykładowe funkcje straty to 'mean_squared_error', 'categorical_crossentropy', 'binary_crossentropy' itp. Wybór odpowiedniej funkcji straty zależy od rodzaju problemu i rodzaju wyjścia modelu.
+
+* ```metrics```: Określa **metryki**, które będą używane do oceny wydajności modelu. Przykładowe metryki to 'accuracy', 'precision', 'recall', 'mean_absolute_error' itp. Metryki służą do monitorowania wydajności modelu podczas uczenia i ewaluacji.
+
+* Inne opcjonalne argumenty, takie jak loss_weights, sample_weight_mode, weighted_metrics, które pozwalają na bardziej zaawansowane konfigurowanie procesu kompilacji modelu.
+
+```python
+model.compile(loss="adam",
+              optimizer="sgd",
+              metrics=["accuracy"])
+```
+
+A następnie wytrenować model za pomocą metody ```fit()```. Metoda ta przyjmuje następujące parametry:
+
+* ```x```: **Dane wejściowe** do modelu.
+
+* ```y```: **Dane wyjściowe** (etykiety) odpowiadające danym wejściowym x.
+
+* ```batch_size```: Określa liczbę próbek, które są przetwarzane jednocześnie przez model w trakcie jednej iteracji.
+
+* ```epochs```: Określa liczbę **epok uczenia** - pełnych przebiegów przez zbiór treningowy. Każda epoka oznacza jedno przejście przez cały zbiór treningowy.
+
+* ```validation_data```: **Dane walidacyjne** używane do oceny wydajności modelu na każdej epoce. Może to być krotka (x_val, y_val) zawierająca dane wejściowe i oczekiwane wyjście dla danych walidacyjnych.
+
+* ```callbacks```: Lista obiektów zwrotnych (callbacks), które są wywoływane podczas treningu w różnych momentach. Przykłady to ModelCheckpoint, EarlyStopping, TensorBoard itp. Callbacks pozwalają na dostosowywanie zachowania treningu w zależności od określonych warunków.
+* ```verbose```: Określa tryb wyświetlania informacji podczas treningu. Może przyjąć wartość 0 (bez wyświetlania), 1 (wyświetlanie paska postępu) lub 2 (wyświetlanie jednej linii na epokę).
+
+* Inne opcjonalne argumenty, takie jak validation_split, shuffle, class_weight itp., które pozwalają na bardziej zaawansowane konfigurowanie procesu treningu modelu.
+
+```python
+history = model.fit(
+    X_train, 
+    y_train, 
+    batch_size=32, 
+    epochs=10, 
+    validation_data=(X_valid, y_valid),
+    callbacks=[early_stopping_cb],
+    verbose=1
+)
+```
+
+## Callbacks
+
+Callbacki pozwalają na wykonywanie dodatkowych operacji w trakcie uczenia modelu. Przykładowe zastosowania:
+
+* ```ModelCheckpoint``` - Zapisywanie punktów kontrolnych
+* ```EarlyStopping``` - zatrzymanie uczenia, jeżeli nie nastąpi poprawa wyniku przez 10 epok (bardzo częste zastosowanie)
+* ```TensorBoard``` - zapisywanie logów do wykorzystania w TensorBoard
+
+```python
+checkpoint_cb = keras.callbacks.ModelCheckpoint(
+    "my_keras_model.h5",
+    save_best_only=True
+)
+ 
+early_stopping_cb = keras.callbacks.EarlyStopping(
+    patience=10,
+    restore_best_weights=True
+)
+
+tensorboard_cb = keras.callbacks.TensorBoard(
+    log_dir="./my_logs",
+    histogram_freq=1,
+    profile_batch=100
+)
+```
+
+Callbacki dodajemy w parametrze ```callbacks``` metody ```fit```
+
+## Analiza procesu uczenia
+
+![Wykres wartości miar w trakcie procesu uczenia](assets/analiza-uczenia.png)
+
+* ***Loss*** - miara, która określa, jak bardzo wyniki modelu różnią się od oczekiwanych wartości.
+
+* ***Accuracy*** - miara, która określa, jak dokładnie model przewiduje klasy lub etykiety dla danych.
+
+* ***Recall*** - miara, która określa, jak wiele pozytywnych przypadków zostało wykrytych przez model.
+
+* ***Precision*** - miara, która określa, jak wiele pozytywnych przypadków zostało poprawnie określonych przez model.
+
+* ***Val_loss*** - strata obliczana na danych walidacyjnych, służy do monitorowania uczenia modelu i unikania przeuczenia.
+
+* ***Val_accuracy*** - dokładność obliczana na danych walidacyjnych, pomaga ocenić, jak dobrze model generalizuje na nowych danych.
+
+Przykłady funkcji strat zostały przedstawione na początku dokumentu.
+
+![Loss](assets/loss.png){ width=3cm } 
+
+## Przeszukiwanie przestrzeni hiperparametrów
+
+### SciKit-Learn
+
+* ```RandomizedSearchCV``` - losowe przeszukiwanie przestrzeni hiperparametrów
+* ```GridSearchCV``` - przeszukiwanie przestrzeni hiperparametrów siatką wartości parametrów
+
+### Keras Tuner
+
+* ```RandomSearch``` - losowe przeszukiwanie przestrzeni hiperparametrów
+
+
+# Konwolucyjne sieci neuronowe (CNN - Convolutional Neural Networks)
+
+* CNN są stosowane do przetwarzania wielowymiarowych danych, takich jak obrazy, wideo itp.
+* Wykorzystują specjalny rodzaj warstwy zwanej warstwą konwolucyjną (Convolutional Layer), która wykonuje operację konwolucji na danych wejściowych.
+
+## Konwolucja
+
+* Konwolucja to operacja matematyczna, która łączy dwa zestawy danych za pomocą funkcji matematycznej, aby wygenerować trzeci zestaw danych.
+* W przypadku konwolucyjnych sieci neuronowych operacją konwolucji jest iloczyn skalarny (mnożenie element-wise) dwóch zestawów danych.
+* Konwolucja jest operacją liniową, która może być używana do wielu celów, takich jak wykrywanie krawędzi i innych wzorców w obrazach, wykrywanie cech w danych itp.
+* Polega na wykonywania sum ważonych dla fragmentów funkcji wejściowej ważonej przez jądro (kernel, który jest macierzą wag).
+* W przypadku sieci neuronowych dane wejściowe są zwykle macierzą wielowymiarową (np. obrazem) i są one łączone z macierzą wag (kernel), aby wygenerować macierz wyjściową
+* Wagi są parametrami, które są uczone podczas treningu modelu
+* W przypadku obrazów macierz wejściowa zawiera piksele obrazu, a macierz wag zawiera filtry, które są aplikowane na obrazie
+* Konwolucja może być obliczana na całym obrazie, ale zwykle stosuje się ją tylko do fragmentu obrazu, aby uzyskać macierz wyjściową o takich samych wymiarach jak macierz wejściowa
+* W przypadku obrazów wagi są zwykle małymi macierzami o wymiarach 3x3 lub 5x5. W przypadku obrazów kolorowych, które mają 3 kanały kolorów (RGB), macierz wag ma wymiary 3x3x3 lub 5x5x3.
+* Każda warstwa konwolucyjna składa się z wielu filtrów, które są stosowane do danych wejściowych, aby wygenerować różne macierze wyjściowe w celu wykrycia różnych cech w danych wejściowych
+
+![Przykład prostej sieci konwolucyjnej](assets/convolution.png)
+
+## Pooling
+
+* Pooling jest operacją, która zmniejsza wymiary danych wejściowych poprzez zastąpienie fragmentu danych wejściowych pojedynczą wartością reprezentującą ten fragment zwracaną przez sprecyzowaną wcześniej funkcję
+* Najczęściej stosowaną funkcją agregującą jest funkcja max, która zwraca maksymalną wartość w fragmencie danych wejściowych
+* Pozwala kolejnym warstwom sieci na wykrywanie cech bardziej ogólnych, poprzez zwielokrotnienie obszaru, na którym bezpośrednio działają
+* Często stosowany po warstwie konwolucyjnej, aby zmniejszyć wymiary danych wejściowych
+* Najczęściej zmniejsza każdy wymiar danych wejściowych o połowę.
+
+## Dropout
+
+* Dropout jest techniką regularyzacji, która losowo zeruje niektóre wyjścia warstwy podczas treningu modelu
+* Pomaga w zapobieganiu przeuczeniu modelu.
+
+## Uczenie rezydualne (Residual Learning)
+
+* Residual Learning jest techniką uczenia głębokich sieci neuronowych, która skupia się na uczeniu różnic (residuum) pomiędzy wartością rzeczywistą a przewidywaną
+* Residual Learning pomaga w zapobieganiu zanikaniu gradientu (vanishing gradient) i przyspiesza proces uczenia modelu
+* Wykorzystujemy obejście (skip connection), aby dodać dane wejściowe do danych wyjściowych warstwy, aby uzyskać dane wyjściowe warstwy rezydualnej.
+
+## Lokalizaacja obiektów
+
+* Lokalizacja obiektów jest techniką uczenia głębokich sieci neuronowych, która służy do wykrywania obiektów w konkretnej lokalizacji na obrazie
+* Można wykorzystać sieci w pełni konwolucyjne (Fully Convolutional Networks) do lokalizacji obiektów, wtedy każdy element wyjściowej macierzy reprezentuje prawdopodobieństwo wystąpienia obiektu w określonym obszarze obrazu
+* Inną metodą jest wykorzystanie przesuwanego okna (sliding window), która polega na przesuwaniu okna po obrazie i sprawdzaniu, czy w oknie znajduje się obiekt, wymaga to wielokrotnego przetwarzania obrazu, co jest bardzo kosztowne obliczeniowo oraz różnych rozmiarów okna, aby wykryć obiekty o różnych rozmiarach
+
+## Segmentacja semantyczna
+
+* Segmentacja semantyczna jest problemem, który polega na przypisaniu każdemu pikselowi obrazu etykiety, która reprezentuje klasę, do której należy dany piksel
+* Można w tym celu stosować architekturę U-Net, która składa się z warstw konwolucyjnych, warstw poolingowych i warstw dekonwolucyjnych twojącą symetryczną strukturę w kształcie litery U.
+
+
+# Rekurencyjne sieci neuronowe (RNN - Recurrent Neural Networks)
+
+* RNN są stosowane do przetwarzania sekwencyjnych danych, takich jak tekst, dźwięk, czasowe serie danych itp.
+* Często wykorzystywane do predykcji na podstawie sekwencji  danych wejściowych (o dowolnej długości), najczęściej do przewidywania przyszłości.
+* Wykorzystują specjalny rodzaj warstwy zwanej warstwą rekurencyjną (Recurrent Layer), która przechowuje stan wewnętrzny, który jest aktualizowany za każdym razem, gdy warstwa otrzymuje dane wejściowe.
+* Zastosowania: finanse (giełda), pojazdy autonomiczne, sterowanie, wykrywanie usterek
+
+Podstawowym elementem RNN jest komórka rekurencyjna, która ma stan wewnętrzny przechowujący informacje z poprzednich **kroków czasowych (ramek)**. W każdym kroku czasowym komórka otrzymuje dane wejściowe oraz stan wewnętrzny (z poprzedniego kroku) i generuje nowy stan wewnętrzny oraz dane wyjściowe. Ten proces jest powtarzany dla każdego kroku czasowego.
+
+Istnieje kilka różnych typów RNN, takich jak **SimpleRNN**, **LSTM** (Long Short-Term Memory) i **GRU** (Gated Recurrent Unit), które różnią się w sposobie zarządzania i aktualizacji stanu wewnętrznego. Na przykład, LSTM wprowadza bramki, które kontrolują przepływ informacji, pozwalając na efektywne uczenie się zależności na różnych skalach czasowych i unikanie problemu zanikającego gradientu.
+
+Działanie RNN można podsumować w kilku krokach:
+
+* Dane wejściowe sekwencyjne są podzielone na kroki czasowe.
+* Na każdym kroku czasowym, dane wejściowe są przetwarzane przez komórkę rekurencyjną, która aktualizuje swój stan wewnętrzny.
+* Dane wyjściowe są generowane na podstawie aktualnego stanu wewnętrznego.
+* Proces jest powtarzany dla kolejnych kroków czasowych, przekazując informacje z poprzednich kroków.
+
+## Unrolling (rozwijanie) 
+
+Proces rozwinięcia lub dekompresji sieci rekurencyjnej na wielu krokach czasowych. W standardowej definicji RNN, model jest reprezentowany jako powtarzające się jednostki, które operują na danych wejściowych w każdym kroku czasowym. Jednak w celu lepszego zrozumienia i wizualizacji działania sieci, często stosuje się unrolling.
+
+Podczas unrollingu, sieć rekurencyjna jest rozwinięta wzdłuż osi czasu, tworząc sekwencję powiązanych ze sobą jednostek. Każda jednostka reprezentuje stan wewnętrzny (np. LSTM lub GRU) oraz warstwę wyjściową, która otrzymuje dane wejściowe z danego kroku czasowego i generuje dane wyjściowe dla tego kroku. Te powiązane jednostki są połączone ze sobą, przechodząc informacje z jednego kroku czasowego do drugiego.
 

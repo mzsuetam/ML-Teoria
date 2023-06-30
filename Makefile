@@ -4,6 +4,7 @@ pdf: ml-teoria.md
 		--metadata-file=config.yaml \
 		--toc \
 		--number-sections
+# -V lang=pl 
 
 autosave:
 	python autosave.py
