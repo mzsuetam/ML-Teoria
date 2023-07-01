@@ -606,9 +606,7 @@ Po utworzeniu modelu należy go skompilować za pomocą metody ```compile()```. 
     * Ryzyko nie osiągnięcia minimum
   * ***Adam*** - Adaptive Moment Estimation, wykorzystuje pęd i historię aktualizacji
     * Wariancje  *Adam*:
-      * **Nadam**:
-        * Adam + Nesterov
-        * Generalnie jest lepsza od *Adam*
+      * **Nadam** (Adam + Nesterov) - Generalnie jest lepsza od *Adam*
   * ***RMSProp*** - Zbiera gradienty tylko z najwcześniejszych iteracji
     * Wiele lepszy niż *AdGrad*
 
@@ -723,8 +721,9 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 * ```RandomSearch``` - losowe przeszukiwanie przestrzeni hiperparametrów
 
 
-# Konwolucyjne sieci neuronowe (CNN - Convolutional Neural Networks)
+# Konwolucyjne sieci neuronowe
 
+* Konwolucyjne sieci neuronowe (CNN - Convolutional Neural Networks)
 * CNN są stosowane do przetwarzania wielowymiarowych danych, takich jak obrazy, wideo itp.
 * Wykorzystują specjalny rodzaj warstwy zwanej warstwą konwolucyjną (Convolutional Layer), która wykonuje operację konwolucji na danych wejściowych.
 * Wymagają mniejszej liczby parametrów (względem *DNN*).
@@ -820,8 +819,9 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
   * *Intersection over Union*
     * Sprawdza jak dobrze model przewiduje *pola ograniczające* (bounding boxes).
 
-# Rekurencyjne sieci neuronowe (RNN - Recurrent Neural Networks)
+# Rekurencyjne sieci neuronowe
 
+* Rekurencyjne sieci neuronowe (RNN - Recurrent Neural Networks)
 * RNN są stosowane do przetwarzania sekwencyjnych danych, takich jak tekst, dźwięk, czasowe serie danych itp.
 * Wykonują przewidywania dla sekwencji o dowolnej długości.
 * Często wykorzystywane do predykcji na podstawie sekwencji danych wejściowych (o dowolnej długości), najczęściej do przewidywania przyszłości.
