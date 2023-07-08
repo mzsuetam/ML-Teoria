@@ -36,3 +36,6 @@ header-includes:
   - \fancyfoot[C]{\thepage}
   - \renewcommand{\headruleskip}{2mm}
   - \setlength{\headheight}{21pt}
+  - \usepackage{rotating}
+  - \newcommand{\bsidewaysfigure}{\begin{sidewaysfigure}[h!]}
+  - \newcommand{\esidewaysfigure}{\end{sidewaysfigure}}

@@ -894,11 +894,16 @@ Podczas unrollingu, sieć rekurencyjna jest rozwinięta wzdłuż osi czasu, twor
   * Jak już musisz to stosuj pomiędzy warstwami rekurencyjnymi
 * *Layer Normalization*
 
+
 # Porównania
 
 ## Modele
 
-| Model                    | Nadzór      | Sposób uogólnienia | Box          | Użycie              | Zastosowanie                           | Złożoność czasowa (uczenie) | Złożoność pamięciowa (uczenie) |
+Poniżej znajduje się porównanie modeli ze względu na sposób uogólnienia, rodzaj nadzoru, rodzaj modelu, sposób użycia, zastosowanie, złożoność czasową i złożoność pamięciową.
+
+\bsidewaysfigure
+
+| Model                    | Nadzór      | Sposób uogólnienia | Box          | Użycie              | Zastosowanie                           | Złożoność czasowa (uczenie) | Złożoność pamięciowa |
 |--------------------------|-------------|--------------------|--------------|---------------------|----------------------------------------|-------------------------|--------------------------|
 | **Regresja liniowa**     | nad. | param.              | White box    | reg.            | Przewidywanie wartości ciągłych        | O(nd)                   | O(d)                     |
 | **Gradient Descent**     | NIEnad. | inst.        | Black box    | -                   | Optymalizacja funkcji                     | O(nd)                   | O(d)                     |
@@ -913,6 +918,6 @@ Podczas unrollingu, sieć rekurencyjna jest rozwinięta wzdłuż osi czasu, twor
 | **DB-SCAN**               | NIEnad. | inst.        | Black box    | Klas., reg. | Grupowanie, wykrywanie anomalii         | O(n²) lub O(n log n)     | O(n)                     |
 | **Głębokie sieci neuronowe** | nad. | param.           | Black box    | Klas., reg. | Klas., reg.                 | Zależy od architektury  | Zależy od architektury   |
 | **Konw. sieci neuronowe** | nad. | param.      | Black box    | Klas., reg. | Przetwarzanie obrazów                   | Zależy od architektury  | Zależy od architektury   |
-| **Rekur. sieci neuronowe** | nad. | param.      | Black box    | Klas., reg. | Przetwarzanie sekwencji, generowanie tekstu |  Zależy od architektury | Zależy od architektury
+| **Rekur. sieci neuronowe** | nad. | param.      | Black box    | Klas., reg. | Przetwarzanie sekwencji, generowanie tekstu |  Zależy od architektury | Zależy od architektury |
 
-
+\esidewaysfigure
