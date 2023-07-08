@@ -3,7 +3,7 @@ pdf: ml-teoria.md
 		--pdf-engine=xelatex \
 		--metadata-file=config.yaml \
 		--toc \
-		--number-sections
+		-N
 # -V lang=pl 
 
 autosave:

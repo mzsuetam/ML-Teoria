@@ -41,6 +41,8 @@ $$ Precission = \frac{TP}{TP + FP} $$
 
 * Stosowana gdy wymagamy od modelu wysoką wartość *True Positives* i chcemy zminimalizować liczbę *False Positives*
 * Proporcja *True Positives* do *sumy True Positives i False Positives* 
+* W przypadku diagnozowania poważnych chorób, takich jak rak. W tym przypadku chcemy minimalizować błędne diagnozy, aby uniknąć niepotrzebnych badań i leczenia dla osób, które nie potrzebują takiej interwencji.
+* Np. Jak wiele wiadomości zaklasyfikowanych jako spam faktycznie jest spamem? 
 
 ### Recall (True Positive Rate, Sensitivity, Probability of Detection)
 
@@ -48,10 +50,12 @@ $$ Recall = \frac{TP}{TP + FN} $$
 
 * Stosowana gdy wymagamy od modelu wysoką wartość *True Positives* i chcemy zminimalizować liczbę *False Negatives*
 * Proporcja *True Positives* do *sumy True Positives i False Negatives*
+* W przypadku wykrywania rzadkich chorób. Tutaj celem jest maksymalizacja liczby poprawnych diagnoz, aby zapewnić pacjentom odpowiednie leczenie w czasie.
+* Np. Jak wiele wiadomości spamu zostało zaklasyfikowanych jako spam?
 
 ### F1-score
 
-$$ F1-score = \frac{2}{\frac{1}{Precision} + \frac{1}{Recall}} $$
+$$ \textit{F1-score} = \frac{2}{\frac{1}{Precision} + \frac{1}{Recall}} $$
 
 * Metryka stosowana do porównywania modeli.
 * Korzystne dla modeli z podobną wartością *Precision* i *Recall*.
@@ -85,6 +89,7 @@ Entropia:
 
 $$ H(X) = -\sum_{i=1}^{n}{p(x_{i}) \log{p(x_{i})}} $$
 
+* $p$ - proporcja wystąpień wartości docelowych w danych regresyjnych
 * Wyraża ilość informacji, którą możemy uzyskać po otrzymaniu instancji ze zbioru
 * Tworzy zbilansowane drzewa
 * Tak dzielimy zbiór tworząc drzewa, aby zysk entropii był jak największy (dowiadujemy się najwięcej dzieląc w ten sposób)
@@ -118,7 +123,7 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 * Dopasowuje hiperpłaszczyznę (określoną funkcją $g$), dla której średnia odległość instancji od wartości funkcji $g$ jest najmniejsza.
 * Mamy zbiór wektorów $A \subseteq \mathbb{R^{n + 1}}$ i funkcję $f: A \rightarrow \mathbb{R}$, która przyporządkowuje każdemu wektorowi $x \in A$ wartość $f(x)$
 * Każdy wektor ze zbioru $A$ ma postać $x = [x_0, x_1, ..., x_n]$, gdzie $x_0 = 1$
-* Chcemy znaleźć funkcję $g: \mathbb{R}^{n + 1} \rightarrow \mathbb{R}$ taką, że $g(x)=\Theta^Tx$ dla pewnego wektora $\Theta \in \mathbb{R}^n$ i wektor $\Theta$ minimalizuje $MSE(x, \Theta) = \frac{1}{n} \sum_{i=1}{n}{(\Theta^Tx - f(x))^2}$
+* Chcemy znaleźć funkcję $g: \mathbb{R}^{n + 1} \rightarrow \mathbb{R}$ taką, że $g(x)=\Theta^Tx$ dla pewnego wektora $\Theta \in \mathbb{R}^n$ i wektor $\Theta$ minimalizuje $MSE(x, \Theta) = \frac{1}{n} \sum_{i=1}^{n}{(\Theta^Tx - f(x))^2}$
 * Można pokazać, że jeżeli mamy wektor $z$ wszystkich wartości $f(x)$ dla wszystkich wektorów ze zbioru $A$ oraz $X$ jest macierzą złożoną ze wszystkich wektorów z A, to $\Theta=(X^TX)^{-1}X^T$
 
 ## Gradient Descent
@@ -217,7 +222,7 @@ Stochastic Gradient Descent:
 
 ## Regresor SVM
 
-* By działał musimy odwrócić jego zadanie- zmieścić jak najwięcej instancji w jak najmniejszym marginesie.
+* By działał musimy odwrócić jego zadanie - zmieścić jak najwięcej instancji w jak najmniejszym marginesie.
   
 ![Wpływ $\epsilon$ na wydajność regresji](assets/regSVM.png)
 
@@ -266,13 +271,13 @@ $J(k, t_k) = \frac{m_{lewa}}{m} * G_{lewa} + \frac{m_{prawa}}{m} * G_{prawa}$, g
 
 # Ensemble Learning i Random Forests
 
+* Wykorzystywana jest moc przyjaźni (ang. *Power of friendship*).
 * Stosujemy zasadę *mądrości tłumu* - jeżeli mamy wiele klasyfikatorów, to możemy je zagregować w grupę klasyfikatorów znacznie zwiększając wydajność modelu.
 * Wszystkie klasyfikatory powinny być od siebie niezależne
 * Redukuje *Bias* i *Variance*
 
 ## W problemie klasyfikacji rozróżniamy 2 rodzaje klasyfikatorów:
 
-Wykorzystywana jest moc przyjaźni (ang. *Power of friendship*).
 
 ### *Hard Voting Classifier*
 
@@ -548,6 +553,8 @@ Wiedza tak trochę ponadprogramowa ale lepiej wiedzieć :>
 
 # Głębokie sieci neuronowe
 
+- Głębokie sieci neuronowe (DNN - Deep Neural Networks) to sieci neuronowe z wieloma warstwami ukrytymi
+
 ## Budowa modelu
 
 ### Keras Sequential API
@@ -609,11 +616,10 @@ Po utworzeniu modelu należy go skompilować za pomocą metody ```compile()```. 
       * **Nadam** (Adam + Nesterov) - Generalnie jest lepsza od *Adam*
   * ***RMSProp*** - Zbiera gradienty tylko z najwcześniejszych iteracji
     * Wiele lepszy niż *AdGrad*
-
-## Problemy *Adaptive estimation methods*
-
-* Może źle generalizować zbiory danych
-* Jak są jakieś problemy użyj *Nesterov Accelerated Gradient* 
+    * **Problemy *Adaptive estimation methods***
+      * M. in. Adam, Nadam, RMSProp, Adagrad
+      * Mogą źle generalizować zbiory danych
+      * Jak są jakieś problemy użyj *Nesterov Accelerated Gradient* 
 
 * ```loss```: Określa **funkcję straty**, która jest używana do oceny odchylenia między przewidywaniami modelu a rzeczywistymi wartościami. Przykładowe funkcje straty to 'mean_squared_error', 'categorical_crossentropy', 'binary_crossentropy' itp. Wybór odpowiedniej funkcji straty zależy od rodzaju problemu i rodzaju wyjścia modelu.
 
@@ -887,3 +893,26 @@ Podczas unrollingu, sieć rekurencyjna jest rozwinięta wzdłuż osi czasu, twor
 * *Batch Normalization* nie jest przydatne
   * Jak już musisz to stosuj pomiędzy warstwami rekurencyjnymi
 * *Layer Normalization*
+
+# Porównania
+
+## Modele
+
+| Model                    | Nadzór      | Sposób uogólnienia | Box          | Użycie              | Zastosowanie                           | Złożoność czasowa (uczenie) | Złożoność pamięciowa (uczenie) |
+|--------------------------|-------------|--------------------|--------------|---------------------|----------------------------------------|-------------------------|--------------------------|
+| **Regresja liniowa**     | nad. | param.              | White box    | reg.            | Przewidywanie wartości ciągłych        | O(nd)                   | O(d)                     |
+| **Gradient Descent**     | NIEnad. | inst.        | Black box    | -                   | Optymalizacja funkcji                     | O(nd)                   | O(d)                     |
+| **Regresja wielomianowa**| nad. | param.              | White box    | reg.            | Modelowanie nieliniowych zależności     | O(nd)                   | O(d)                     |
+| **Regresja logistyczna** | nad. | param.              | White box    | Klas.        | Klas. binarna                   | O(nd)                   | O(d)                     |
+| **SVM - Support Vector Machines** | nad. | param.    | Black box    | Klas.        | Klas. binarna i wieloklasowa     | O(n²d)                  | O(n²)                    |
+| **Drzewa decyzyjne**     | nad. | param.              | White box    | Klas., reg. | Klas., reg.                 | O(nd log n)             | O(nd) 
+| **Ensemble Learning**    | nad. | param.              | Black box    | Klas., reg. | Zwiększanie wydajności modelu           | Zależy od modeli bazowych  | Zależy od modeli bazowych   |
+| **Las losowy (Random Forest)** | nad. | param.        | Black box    | Klas., reg. | Klas., reg.                 | O(ndk log n)            | O(ndk)                   |
+| **Gradient Boosting**    | nad. | param.              | Black box    | Klas., reg. | Klas., reg.                 | O(ndk log n)            | O(ndk)                   |
+| **K-Nearest Neighbors**  | nad. | inst.          | Black box    | Klas., reg. | Klas., reg.                 | O(nd)                   | O(nd)                    |
+| **DB-SCAN**               | NIEnad. | inst.        | Black box    | Klas., reg. | Grupowanie, wykrywanie anomalii         | O(n²) lub O(n log n)     | O(n)                     |
+| **Głębokie sieci neuronowe** | nad. | param.           | Black box    | Klas., reg. | Klas., reg.                 | Zależy od architektury  | Zależy od architektury   |
+| **Konw. sieci neuronowe** | nad. | param.      | Black box    | Klas., reg. | Przetwarzanie obrazów                   | Zależy od architektury  | Zależy od architektury   |
+| **Rekur. sieci neuronowe** | nad. | param.      | Black box    | Klas., reg. | Przetwarzanie sekwencji, generowanie tekstu |  Zależy od architektury | Zależy od architektury
+
+
