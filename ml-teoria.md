@@ -8,11 +8,14 @@ Podziały ze względu na:
   * **częściowo nadzorowane** - część danych jest etykietowana, część nie
   * **uczenie przez wzmacnianie** - polega na dawaniu kar i nagród za konkretne wybory, które algorytm uwzględnia przy kolejnych próbach 
 * sposób uogólnienia:
-  * **instancje (np. KNN, drzewa)** - uczenie na pamięć, szuka najbardziej podobnego do pytanego obiektu i podpisuje go tak samo według poznanych zasad, przykład: K-nearest neighbors; przede wszystkim wielkość modelu jest nieznana przed rozpoczęciem uczenia
-  * **model (np. sieci neuronowe, regresja logistyczna, SVM)** - szuka zależności między wartościami i na ich podstawie dobiera parametry funkcji, na podstawie której potem przewiduje wartość; wielkość modelu jest znana przed rozpoczęciem uczenia
+  * **instancje (nieparametryczny) (np. KNN, drzewa)** - uczenie na pamięć, szuka najbardziej podobnego do pytanego obiektu i podpisuje go tak samo według poznanych zasad, przykład: K-nearest neighbors; przede wszystkim wielkość modelu jest nieznana przed rozpoczęciem uczenia
+  * **model (parametryczny) (np. sieci neuronowe, regresja logistyczna, SVM)** - szuka zależności między wartościami i na ich podstawie dobiera parametry funkcji, na podstawie której potem przewiduje wartość; wielkość modelu jest znana przed rozpoczęciem uczenia
 * dostęp do danych:
   * **batch** - posiadamy dostęp do kompletnego zbioru danych, jeśli możemy trzymać cały zbiór danych i dane nie zmieniają się zbyt często
   * **online (mini-batches)** - karmimy model ciągle małymi porcjami danych, jeśli nie mamy miejsca na utrzymanie całego zbioru lub dane ciągle się zmieniają
+* prostota (interpretowalność) 
+  * **White Box** - Prosty do zinterpretowania- wiemy dlaczego podjął taką a nie inną decyzję.
+  * **Black Box** - Trudny do zinterpretowania- nie wiemy dlaczego podjął taką a nie inną decyzję.
 
 ![mapka wyboru algorytmu](assets/wybor-algorytmu.png)
 
@@ -117,7 +120,9 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 
 # Regresja
 
-## Regresja Liniowa
+## Regresja
+
+### Regresja Liniowa
 
 * Opiera się na założeniu, że istnieje liniowa zależność między zmiennymi wejściowymi a zmienną wyjściową.
 * Dopasowuje hiperpłaszczyznę (określoną funkcją $g$), dla której średnia odległość instancji od wartości funkcji $g$ jest najmniejsza.
@@ -125,6 +130,16 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 * Każdy wektor ze zbioru $A$ ma postać $x = [x_0, x_1, ..., x_n]$, gdzie $x_0 = 1$
 * Chcemy znaleźć funkcję $g: \mathbb{R}^{n + 1} \rightarrow \mathbb{R}$ taką, że $g(x)=\Theta^Tx$ dla pewnego wektora $\Theta \in \mathbb{R}^n$ i wektor $\Theta$ minimalizuje $MSE(x, \Theta) = \frac{1}{n} \sum_{i=1}^{n}{(\Theta^Tx - f(x))^2}$
 * Można pokazać, że jeżeli mamy wektor $z$ wszystkich wartości $f(x)$ dla wszystkich wektorów ze zbioru $A$ oraz $X$ jest macierzą złożoną ze wszystkich wektorów z A, to $\Theta=(X^TX)^{-1}X^T$
+
+### Regresja wielomianowa
+
+* Regresja liniowa, ale zamiast liniowej funkcji $g$ używamy wielomianu $g$ stopnia $n$
+* Do każdej instancji $x$ dodajemy nowe cechy $x_2 = x^2, x_3 = x^3, ..., x_n = x^n$, następnie stosujemy regresję liniową na nowym zbiorze cech.
+
+### Regresja Logistyczna
+* Wykorzystuj funkcję aktywacji $f(x) = \frac{1}{1+e^{-x}}$ (Sigmoid)
+* Szacuje prawdopodobieństwo przynależności instancji do pewnej klasy.
+* Stosuje funkcji *sigmoid* do zwrócenia prawdopodobieństwa (Sigmoid zwraca wartości między 0 a 1).
 
 ## Gradient Descent
 
@@ -134,17 +149,12 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 * Przesuwamy się w kierunku przeciwnym do wektora gradientu, ponieważ gwarantuje to najszybsze możliwe zmniejszanie się wartości funkcji
 * Znajduje minimum lokalne.
 
-Stochastic Gradient Descent:
+### SGD Stochastic Gradient Descent:
 
 * Stosowany w przypadku, gdy zbiór danych jest bardzo duży
 * Do obliczania gradientu wybieramy losowo podzbiór danych
 * Znajduje minimum lokalne, szybciej niż *Gradient Descent*, ale nie jest tak dokładny.
-
-## Regresja wielomianowa
-
-* Regresja liniowa, ale zamiast liniowej funkcji $g$ używamy wielomianu $g$ stopnia $n$
-* Do każdej instancji $x$ dodajemy nowe cechy $x_2 = x^2, x_3 = x^3, ..., x_n = x^n$, następnie stosujemy regresję liniową na nowym zbiorze cech.
-
+  
 ## Learning Curves
 
 ### Bias
@@ -188,10 +198,6 @@ Stochastic Gradient Descent:
 
 ---
 
-## Regresja Logistyczna
-* Wykorzystuj funkcję aktywacji $f(x) = \frac{1}{1+e^{-x}}$ (Sigmoid)
-* Szacuje prawdopodobieństwo przynależności instancji do pewnej klasy.
-* Stosuje funkcji *sigmoid* do zwrócenia prawdopodobieństwa (Sigmoid zwraca wartości między 0 a 1).
 
 # SVM (Support Vector Machines)
 
@@ -234,11 +240,6 @@ Stochastic Gradient Descent:
 
 * Stosowany do klasyfikacji i regresji
 * Nie wymaga przygotowania danych, nie trzeba skalować ani centrować
-* **Model Nieparametryczny**
-  * Liczba parametrów nie jest zdefiniowana przed ćwiczeniem modelu
-  * Model może się przeuczyć.
-* **White Box model**
-  * Prosty do zinterpretowania- wiemy dlaczego podjął taką a nie inną decyzję.
 * Scikit używa algorytmu **CART** (próbuje zachłannie minimalizować współczynnik Gini) do trenowania drzew decyzyjnych
 * Algorytm **CART** w celu ustalenia miejsca podziału oblicza wartość \
 $J(k, t_k) = \frac{m_{lewa}}{m} * G_{lewa} + \frac{m_{prawa}}{m} * G_{prawa}$, gdzie $G_{lewa}$ i $G_{prawa}$ wyrażają nieczystości lewej i prawej części po podziale, a $m_{lewa}$ i $m_{prawa}$ to liczba instancji w lewej i prawej części, $m$ to liczba wszystkich instancji
@@ -404,7 +405,7 @@ Kategorie uczenia nienadzorowanego:
   * detekcja wartości odstających, *outlierów*
 * Estymacja gęstości *density estimation*
 
-![Podobne do klasyfikacji, ale nie wiadomo ile jest klas](assets/nienadzorowane.png)
+![Różnica między uczeniem nadzorowanym a nienadzorowanym](assets/nienadzorowane.png)
 
 ## Soft Clustering
 * Przypisuje każdej instancji wynik przypisywany dla każdego klastra.
@@ -412,6 +413,34 @@ Kategorie uczenia nienadzorowanego:
 
 ## Hard Clustering
 * Każda instancja jest przypisana do 1 klastra.
+
+## DBSCAN
+
+* Algorytm DBSCAN (*Density-Based Spatial Clustering of Applications with Noise*) jest algorytmem klasteryzacji, który znajduje skupiska o wysokiej gęstości
+* Algorytm ten znajduje skupiska o wysokiej gęstości, a także punkty odstające
+* Algorytm ten nie wymaga określenia liczby klastrów
+* Wymaga określenia dwóch parametrów: *eps* i *min_samples*
+  * *eps* - maksymalna odległość między dwoma punktami, aby zostały one uznane za sąsiadów
+  * *min_samples* - minimalna liczba punktów, aby uznać je za rdzeń (wliczając w to punkt, dla którego szukamy sąsiadów)
+* Wszystkie instancje, które nie są rdzeniami, ale mają sąsiadów, są uznawane za brzegi, wchodzą w skład tego samego klastra, co ich rdzeń
+* Instancje, które nie są ani rdzeniami, ani brzegami, są uznawane za anomalią (nie należą do żadnego klastra)
+
+![Przedstawienie działania alg. DBSCAN](assets/dbscan.png)
+
+## KNN - K-nearest neighbors
+
+* Algorytm KNN (*K-nearest neighbors*) jest algorytmem klasyfikacji, który przypisuje nową instancję do klasy, która jest najbardziej popularna wśród *k* najbliższych sąsiadów
+* W przypadku regresji algorytm ten zwraca średnią wartość *k* najbliższych sąsiadów
+* Jeżeli *k* jest zbyt małe, to algorytm ten jest podatny na szumy
+* W przypadku remisu:
+  * **wybór pierwszej napotkanej instancji** (implementacja scikit-learn)
+  * wybór losowy
+  * wybór liczniejszej klasy 
+  * wybór wartości najbliższej instancji (tylko dla regresji)
+  * brana pod uwagę jest odległość od instancji do sąsiada (średnia ważona) (tylko dla regresji)
+  * średnia wartość wszystkich instancji o tej samej odległości (tylko dla regresji)
+
+![Przedstawienie działania alg. KNN](assets/knn.png)
 
 ## Algorytm centroidów (k-średnich) *K-Means*
 
@@ -432,6 +461,7 @@ Kategorie uczenia nienadzorowanego:
   * W bardziej optymalny sposób dobiera początkowe centroidy
 * *Mini batch K-Means*
   * Używa *batch* zamiast całego zbioru danych
+* W przypadku równej odległości do więcej niż jednego centroida instancja jest przypisywana do **losowego centroidu**, pierwszego napotkanego centroidu lub wybierany jest centroid grupujący większą liczbę instancji 
 
 ![Przykładowy rozkład danych](assets/k-means.png)
 
@@ -447,28 +477,15 @@ Do wyznaczenia liczby klastrów nie wystarcza sama inercja, ponieważ maleje ona
 
 ![Wykorzystanie inercji do wyznaczenia liczby *k*](assets/k-means-inertia.png)
 
-Do wyznaczenia liczby klastrów możemy również wykorzystać **Wskaźnik sylwetkowy, *silhouette score***. Wskaźnik bierze pod uwagę średnią odległość pomiędzy obserwacjami wewnątrz grupy (*a*) i średnią odległość pomiędzy obserwacjami do najbliższej "obcej" grupy (*b*) i dany jest wzorem:
+Do wyznaczenia liczby klastrów możemy również wykorzystać **Wskaźnik sylwetkowy, *silhouette score***. Wskaźnik bierze pod uwagę średnią odległość pomiędzy obserwacjami wewnątrz grupy ($a_i$) i średnią odległość pomiędzy obserwacjami do najbliższej "obcej" grupy ($b_i$) i dany jest wzorem:
 
-$$ s = \frac{a-b}{max(a,b)} $$
+$$ s = \frac{1}{k} \sum^k_{i=1} \frac{a_i-b_i}{max(a_i,b_i)} $$
 
 * Najlepsza wartość: 1
 * Najgorsza wartość: -1
 * Nakładające się wartości: w pobliżu 0
 
 ![Wykorzystanie wskaźnika sylwetkowego do wyznaczenia liczby *k*](assets/k-means-silhouette.png)
-
-## DBSCAN
-
-* Algorytm DBSCAN (*Density-Based Spatial Clustering of Applications with Noise*) jest algorytmem klasteryzacji, który znajduje skupiska o wysokiej gęstości
-* Algorytm ten znajduje skupiska o wysokiej gęstości, a także punkty odstające
-* Algorytm ten nie wymaga określenia liczby klastrów
-* Wymaga określenia dwóch parametrów: *eps* i *min_samples*
-  * *eps* - maksymalna odległość między dwoma punktami, aby zostały one uznane za sąsiadów
-  * *min_samples* - minimalna liczba punktów, aby uznać je za rdzeń (wliczając w to punkt, dla którego szukamy sąsiadów)
-* Wszystkie instancje, które nie są rdzeniami, ale mają sąsiadów, są uznawane za brzegi, wchodzą w skład tego samego klastra, co ich rdzeń
-* Instancje, które nie są ani rdzeniami, ani brzegami, są uznawane za anomalią (nie należą do żadnego klastra)
-
-![Alt text](assets/dbscan.png)
 
 # Sieci neuronowe - wprowadzenie
 
@@ -505,43 +522,49 @@ $$ s = \frac{a-b}{max(a,b)} $$
 * Potrzebujemy dobrze zdefiniowanej niezerowej pochodnej
   * *Gradient Descent* robi progres w każdym kroku. 
 
-$$ \sigma(z) = \frac{1}{1+e^{-z}} $$
+Poniższa lista jest ułożona od najlepszych funkcji aktywacji (oprócz ``softmax``).
 
-$$ tanh(z) = 2\sigma(2z) - 1 $$
+1. SeLU (Skalowana liniowa jednostka eksponencjalna)
+  * Najlepsze dla *Głębokiej Sieci Neuronowej* 
+  * Potrafi się samodzielnie znormalizować
+    * Rozwiązuje problem znikających i eksplodujących gradientów.
+  * Warunki zbioru danych:
+    * Wszystkie warstwy muszą być gęste
+    * Dane muszą być standaryzowane (średnia = 0, odchylenie standardowe = 1).
+    $$ SeLU(z) = \begin{cases} \lambda \alpha (e^z - 1) & \text{if } z < 0 \\ \lambda z & \text{if } z \geq 0 \end{cases} $$
 
-$$ ReLU(z) = max(0, z) $$
+2. ELU (Exponential Linear Unit):
+  * ELU jest podobne do SeLU, ale nie jest zależne od normalizacji danych.
+  * Funkcja ELU ma mniejszą podatność na problem znikających i wybuchających gradientów.
+    $$ ELU(z) = \begin{cases} \alpha (e^z - 1) & \text{if } z < 0 \\ z & \text{if } z \geq 0 \end{cases} $$
 
-$$ LeakyReLU(z) = max(\alpha z, z) $$
-
-$$ ELU(z) = \begin{cases} \alpha (e^z - 1) & \text{if } z < 0 \\ z & \text{if } z \geq 0 \end{cases} $$
-
-$$ SeLU(z) = \begin{cases} \lambda \alpha (e^z - 1) & \text{if } z < 0 \\ \lambda z & \text{if } z \geq 0 \end{cases} $$
-
-$$ Softmax(z)_j = \frac{e^{z_j}}{\sum_{k=1}^K e^{z_k}} $$
-
-Softmax - funkcja aktywacji wykorzystywana w warstwie wyjściowej klasyfikatorów wieloklasowych, generuje rozkład prawdopodobieństwa.
-
-![Niektóre funkcje aktywacji wykorzystywane w sieciach neuronowych](assets/funkcje-aktywacji.png)
-
-### Którą funkcję aktywacji użyć? 
-
-Wiedza tak trochę ponadprogramowa ale lepiej wiedzieć :>
-
-1. SeLU 
-* Najlepsze dla *Głębokiej Sieci Neuronowej* 
-* Potrafi się samodzielnie znormalizować
-  * Rozwiązuje problem znikających i eksplodujących gradientów.
-* Warunki zbioru danych:
-  * Wszystkie warstwy muszą być gęste
-  * Dane muszą być standaryzowane
-    * średnia = 0
-    * $\delta$ = 1
-  
-2. ELU
 3. Leaky ReLU
-4. ReLU
-5. tanh
-6. logistic
+  * Leaky ReLU jest modyfikacją funkcji ReLU, która rozwiązuje problem "martwych neuronów" (neurony, które zawsze mają wartość 0 dla niektórych danych wejściowych).
+    $$ LeakyReLU(z) = max(\alpha z, z) $$   
+
+4. ReLU (Rectified Linear Unit):
+  * ReLU jest jedną z najpopularniejszych funkcji aktywacji. Ma dobrą zdolność do modelowania nieliniowych relacji.
+  * Jeżeli wszystkie wartości danych treningowych są ujemne, to neuron z ReLU się nie uczy
+    $$ ReLU(z) = max(0, z) $$
+
+5. Tanh (tangens hiperboliczny):
+  * Funkcja tanh jest splotem funkcji sigmoidalnej i może generować wartości z przedziału (-1, 1).
+  * Funkcja ta ma symetryczny kształt wokół zera i może być przydatna w przypadkach, gdy oczekuje się zarówno wartości dodatnich, jak i ujemnych.
+    $$ tanh(z) = 2\sigma(2z) - 1 $$
+  
+6. logistic (funkcja sigmoidalna):
+  * Funkcja sigmoid, znana również jako funkcja logistyczna, generuje wartości z przedziału (0, 1).
+  * Często jest używana w warstwie wyjściowej modeli binarnych do przewidywania prawdopodobieństwa przynależności do jednej z dwóch klas.
+    $$ \sigma(z) = \frac{1}{1+e^{-z}} $$
+
+7. Softmax
+  * Funkcja aktywacji wykorzystywana w warstwie wyjściowej klasyfikatorów wieloklasowych, generuje rozkład prawdopodobieństwa.
+  * Opisuje pewność dopasowania do każdej klasy.
+  
+    $$ Softmax(z)_j = \frac{e^{z_j}}{\sum_{k=1}^K e^{z_k}} $$
+  
+![Wykresy omawianych funkcji aktywacji](assets/funkcje-aktywacji.png)
+
 
 ## Warstwy
 
@@ -899,25 +922,40 @@ Podczas unrollingu, sieć rekurencyjna jest rozwinięta wzdłuż osi czasu, twor
 
 ## Modele
 
-Poniżej znajduje się porównanie modeli ze względu na sposób uogólnienia, rodzaj nadzoru, rodzaj modelu, sposób użycia, zastosowanie, złożoność czasową i złożoność pamięciową.
+Poniżej znajduje się porównanie modeli ze względu na sposób uogólnienia, rodzaj nadzoru, prostotę (interpretowalność) , sposób użycia, zastosowanie, złożoność czasową i złożoność pamięciową.
 
-\bsidewaysfigure
+Za model nieparametryczny (oparty o instancje) uznajemy model, który nie ma ustalonej liczby parametrów, które muszą zostać wyznaczone w procesie uczenia. W przypadku modeli parametrycznych, liczba parametrów jest stała i niezależna od ilości danych treningowych.
 
-| Model                    | Nadzór      | Sposób uogólnienia | Box          | Użycie              | Zastosowanie                           | Złożoność czasowa (uczenie) | Złożoność pamięciowa |
-|--------------------------|-------------|--------------------|--------------|---------------------|----------------------------------------|-------------------------|--------------------------|
-| **Regresja liniowa**     | nad. | param.              | White box    | reg.            | Przewidywanie wartości ciągłych        | O(nd)                   | O(d)                     |
-| **Gradient Descent**     | NIEnad. | inst.        | Black box    | -                   | Optymalizacja funkcji                     | O(nd)                   | O(d)                     |
-| **Regresja wielomianowa**| nad. | param.              | White box    | reg.            | Modelowanie nieliniowych zależności     | O(nd)                   | O(d)                     |
-| **Regresja logistyczna** | nad. | param.              | White box    | Klas.        | Klas. binarna                   | O(nd)                   | O(d)                     |
-| **SVM - Support Vector Machines** | nad. | param.    | Black box    | Klas.        | Klas. binarna i wieloklasowa     | O(n²d)                  | O(n²)                    |
-| **Drzewa decyzyjne**     | nad. | param.              | White box    | Klas., reg. | Klas., reg.                 | O(nd log n)             | O(nd) 
-| **Ensemble Learning**    | nad. | param.              | Black box    | Klas., reg. | Zwiększanie wydajności modelu           | Zależy od modeli bazowych  | Zależy od modeli bazowych   |
-| **Las losowy (Random Forest)** | nad. | param.        | Black box    | Klas., reg. | Klas., reg.                 | O(ndk log n)            | O(ndk)                   |
-| **Gradient Boosting**    | nad. | param.              | Black box    | Klas., reg. | Klas., reg.                 | O(ndk log n)            | O(ndk)                   |
-| **K-Nearest Neighbors**  | nad. | inst.          | Black box    | Klas., reg. | Klas., reg.                 | O(nd)                   | O(nd)                    |
-| **DB-SCAN**               | NIEnad. | inst.        | Black box    | Klas., reg. | Grupowanie, wykrywanie anomalii         | O(n²) lub O(n log n)     | O(n)                     |
-| **Głębokie sieci neuronowe** | nad. | param.           | Black box    | Klas., reg. | Klas., reg.                 | Zależy od architektury  | Zależy od architektury   |
-| **Konw. sieci neuronowe** | nad. | param.      | Black box    | Klas., reg. | Przetwarzanie obrazów                   | Zależy od architektury  | Zależy od architektury   |
-| **Rekur. sieci neuronowe** | nad. | param.      | Black box    | Klas., reg. | Przetwarzanie sekwencji, generowanie tekstu |  Zależy od architektury | Zależy od architektury |
+<!-- \bsidewaysfigure -->
 
-\esidewaysfigure
+| **Model**                    | **Nadzór**      | **Sposób uogólnienia** | **Prostota**          | **Zastosowanie**        | **Złożoność czasowa (uczenie)** | **Złożoność pamięciowa** |
+|--------------------------|-------------|--------------------|--------------|---------------------|-----------------------------|----------------------|
+| **Regresja liniowa**     | nad. | param.              | White box    | Przewidywanie wartości ciągłych        | O(nd)                   | O(d)                     |
+| **Regresja wielomianowa**| nad. | param.              | White box    | Modelowanie nieliniowych zależności     | O(nd)                   | O(d)                     |
+| **Regresja logistyczna** | nad. | param.              | White box  | Klas. binarna                   | O(nd)                   | O(d)                     |
+| **SVM - Support Vector Machines** | nad. | param.    | Black box | Reg., klas. binarna i wieloklasowa     | O(n²d)                  | O(n²)                    |
+| **Drzewa decyzyjne**     | nad. | param.              | White box    | Klas., reg.                 | O(nd log n)             | O(nd) 
+| **Las losowy (Random Forest)** | nad. | param.        | Black box    | Klas., reg.                 | O(ndm log n)            | O(ndk)                   |
+| **Gradient Boosting**    | nad. | param.              | Black box    | Klas., reg.                 | O(ndm log n)            | O(ndk)                   |
+| **K-Nearest Neighbors**  | nad. | inst.          | White box    | Klas., reg.                 | O(nd)                   | O(nd)                    |
+| **DBSCAN**               | NIEnad. | inst.        | White box    | Grupowanie, wykrywanie anomalii         | O(n²) lub O(n log n)     | O(n)  
+| **K-Means**                   | NIEnad. | param.        | White box    | Grupowanie, wykrywanie anomalii | O(nkd)                  | O(nd)                    |
+| **Głębokie sieci neuronowe** | nad. | param.           | Black box    | Klas., reg., rozpoznawanie wzroców, zaawansowana analiza dancyh | Zależy od architektury  | Zależy od architektury   |
+| **Konw. sieci neuronowe** | nad. | param.      | Black box    | Przetwarzanie obrazów                   | Zależy od architektury  | Zależy od architektury   |
+| **Rekur. sieci neuronowe** | nad. | param.      | Black box    | Przetwarzanie sekwencji, generowanie tekstu |  Zależy od architektury | Zależy od architektury |
+
+<!-- \esidewaysfigure -->
+
+
+Użyto oznaczeń: 
+
+* nad. - nadzorowane
+* NIEnad. - nienadzorowane
+* param. - parametryczny
+* inst. - nieparametryczny (oparty o instancje)
+* reg. - regresja
+* klas. - klasyfikacja
+* $n$ - liczba próbek
+* $d$ - liczba cech
+* $m$ - liczba modeli
+* $k$ - liczba klastrów
