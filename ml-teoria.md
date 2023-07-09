@@ -576,7 +576,7 @@ Poniższa lista jest ułożona od najlepszych funkcji aktywacji (oprócz ``softm
 
 # Głębokie sieci neuronowe
 
-- Głębokie sieci neuronowe (DNN - Deep Neural Networks) to sieci neuronowe z wieloma warstwami ukrytymi
+Głębokie sieci neuronowe (DNN - Deep Neural Networks) to sieci neuronowe z wieloma warstwami ukrytymi
 
 ## Budowa modelu
 
@@ -687,12 +687,12 @@ history = model.fit(
 
 ## Callbacks
 
-* Użyteczne jak mamy długi czas uczenia
-
-Callbacki pozwalają na wykonywanie dodatkowych operacji w trakcie uczenia modelu. Przykładowe zastosowania:
+Callbacki pozwalają na wykonywanie dodatkowych operacji w trakcie uczenia modelu. Użyteczne jak mamy długi czas uczenia. Przykładowe callbacki ich ich zastosowania:
 
 * ```ModelCheckpoint``` - Zapisywanie punktów kontrolnych
+
 * ```EarlyStopping``` - zatrzymanie uczenia, jeżeli nie nastąpi poprawa wyniku przez 10 epok (bardzo częste zastosowanie)
+  
 * ```TensorBoard``` - zapisywanie logów do wykorzystania w TensorBoard
 
 ```python
@@ -713,7 +713,7 @@ tensorboard_cb = keras.callbacks.TensorBoard(
 )
 ```
 
-Callbacki dodajemy w parametrze ```callbacks``` metody ```fit```
+Callbacki dodajemy w parametrze ```callbacks``` metody ```fit```.
 
 ## Analiza procesu uczenia
 
@@ -869,17 +869,15 @@ Istnieje kilka różnych typów RNN, takich jak **SimpleRNN**, **LSTM** (Long Sh
 
 ### Sequence to sequence network
 
-* Pobiera sekwencje danych wejściowych i generuje sekwencję przewidywanych danych.
+Pobiera sekwencje danych wejściowych i generuje sekwencję przewidywanych danych.
 
-### Vector to sequence network
+### Vector to sequence network (**Dekoder**)
 
-* Podaje ten sam wektor danych wejściowych w każdym kroku czasowym i generuje sekwencję przewidywanych danych.
-* Dekodera.
+Podaje ten sam wektor danych wejściowych w każdym kroku czasowym i generuje sekwencję przewidywanych danych.
 
-### Sequence to vector network
+### Sequence to vector network (**Enkonder**)
 
-* Podaj sekwencję danych wejściowych i zignoruj wygenerowaną sekwencję przewidywanych danych poza ostatnią wartością.
-* Enkoder.
+Podaj sekwencję danych wejściowych i zignoruj wygenerowaną sekwencję przewidywanych danych poza ostatnią wartością.
 
 ## Działanie RNN w kilku krokach:
 
@@ -890,13 +888,11 @@ Istnieje kilka różnych typów RNN, takich jak **SimpleRNN**, **LSTM** (Long Sh
 
 ## Przewidywanie kilku kroków czasowych do przodu
 
-* Rozróżniamy 3 najpopularniejsze sposoby:
-  * Model przewiduje 1 krok czasowy na raz
-    * Wyjście modelu prowadzimy do wejścia modelu
-    * Najgorsza opcja, błąd jest akumulowany za każdym cyklem
+Rozróżniamy 3 najpopularniejsze sposoby:
+
+  * Model przewiduje 1 krok czasowy na raz: Wyjście modelu prowadzimy do wejścia modelu. Jest to najgorsza opcja, błąd jest akumulowany za każdym cyklem.
   * Model przewiduje $n$ kroków na raz
-  * Model przewiduje wszystkie kroki na raz
-    * Najlepiej ją stosować
+  * Model przewiduje wszystkie kroki na raz: Najlepsza opcja
 
 ## Unrolling (rozwijanie) 
 
@@ -906,7 +902,7 @@ Podczas unrollingu, sieć rekurencyjna jest rozwinięta wzdłuż osi czasu, twor
 
 ## Osadzenia
 
-* Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej długości.
+Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej długości.
 
 ## Rozwiązanie problemu niestabilnych gradientów
 
