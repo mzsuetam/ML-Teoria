@@ -479,7 +479,7 @@ Do wyznaczenia liczby klastrów nie wystarcza sama inercja, ponieważ maleje ona
 
 Do wyznaczenia liczby klastrów możemy również wykorzystać **Wskaźnik sylwetkowy, *silhouette score***. Wskaźnik bierze pod uwagę średnią odległość pomiędzy obserwacjami wewnątrz grupy ($a_i$) i średnią odległość pomiędzy obserwacjami do najbliższej "obcej" grupy ($b_i$) i dany jest wzorem:
 
-$$ s = \frac{1}{k} \sum^k_{i=1} \frac{a_i-b_i}{max(a_i,b_i)} $$
+$$ s = \frac{1}{k} \sum^k_{i=1} \frac{b_i-a_i}{max(a_i,b_i)} $$
 
 * Najlepsza wartość: 1
 * Najgorsza wartość: -1
