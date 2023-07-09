@@ -930,7 +930,7 @@ Za model nieparametryczny (oparty o instancje) uznajemy model, który nie ma ust
 | **Regresja wielomianowa**| nad. | param.              | White box    | Modelowanie nieliniowych zależności     | O(nd)                   | O(d)                     |
 | **Regresja logistyczna** | nad. | param.              | White box  | Klas. binarna                   | O(nd)                   | O(d)                     |
 | **SVM - Support Vector Machines** | nad. | param.    | Black box | Reg., klas. binarna i wieloklasowa     | O(n²d)                  | O(n²)                    |
-| **Drzewa decyzyjne**     | nad. | param.              | White box    | Klas., reg.                 | O(nd log n)             | O(nd) 
+| **Drzewa decyzyjne**     | nad. | inst.              | White box    | Klas., reg.                 | O(nd log n)             | O(nd) 
 | **Las losowy (Random Forest)** | nad. | param.        | Black box    | Klas., reg.                 | O(ndm log n)            | O(ndk)                   |
 | **Gradient Boosting**    | nad. | param.              | Black box    | Klas., reg.                 | O(ndm log n)            | O(ndk)                   |
 | **K-Nearest Neighbors**  | nad. | inst.          | White box    | Klas., reg.                 | O(nd)                   | O(nd)                    |
