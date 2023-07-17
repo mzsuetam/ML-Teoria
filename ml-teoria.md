@@ -913,6 +913,120 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
   * Jak już musisz to stosuj pomiędzy warstwami rekurencyjnymi
 * *Layer Normalization*
 
+## Przygotowanie danych do RNN
+
+
+
+# Sieci Enkoder-Dekoder
+
+* Stosowana w problemach *Sequence to Sequence* (np. Przetłumaczenie zdania na inny języka, Rozpoznawanie mowy, Opis zdjęcia), gdzie <ins>długość wektora wejściowego jest różna od długości wektora wyjściowego</ins>.
+* Sieć składająca się z 2 podsieci: **Enkodera** i **Dekodera**.
+  * Zwykle obie te sieci posiadają taką samą architekturę, przy czym *Dekoder* działa odwrotnie względem Enkodera.
+* W sieciach tych możemy stosować dowolnych rodzajów sieci (CNN, RNN, LSTM itp.)
+
+![Architektura sieci Enkoder-Dekoder](assets/ecoder-decoder.png)
+
+## Enkoder
+
+* Na wejście pobiera sekwencję o zmiennej długości.
+* W przypadku przetwarzania języka pobiera zdanie jako input i zwraca sekwencję liczb.
+* Zbudowana z kilku warstw rekurencyjnych.
+  * Sieć rozumie kontekst i zależności między słowami w zdaniu.
+
+## Dekoder
+
+* Działa jak model języka warunkowego.
+* Jako wejście pobiera sekwencję zwracaną przez enkoder.
+* Zwraca tokeny odpowiadające danym słowom w języku docelowym.
+
+## Dlaczego ją stosujemy do tłumaczenia języków?
+
+* W przypadku zwykłej głębokiej sieci neuronowej tłumaczone będą słowa w naiwny sposób- sieć nie będzie dbała o kontekst, a tylko o poprawne przetłumaczenie słowa.
+* *Enkoder-Dekoder* rozwiązuje ten problem poprzez użycie 2 sieci neuronowych.
+  * *Enkoder* wyciąga znaczenie słowa wejściowego.
+  * *Dekoder* przetwarza sekwencję zwróconą przez enkoder i tworzy własną wersję zdania.
+
+## Sieci Enkoder-Dekoder z różnymi rodzajami sieci
+
+* Przy projektowaniu poniższych architektur pamiętajmy o limitacjach związanych z doborem odpowiednich sieci.
+  * CNN potrzebują duży zbiór danych treningowych i są kosztowne obliczeniowo.
+  * RNN problem zanikających/wybuchających gradientów.
+  * Połączenie różnych sieci zwiększa złożoność modelu i czas trenowania.
+
+### CNN jako Enkoder, RNN/LSTM jako Dekoder
+
+* Stosowany do generowania podpisów do obrazów.
+
+### RNN/LSTM jako Enkoder, RNN/LSTM jako Dekoder
+
+* Tłumaczenie zdań na inny język.
+
+### Attention Mechanisms (Mechanizm Uwagi)
+
+* Lepsza wydajność względem sieci *Enkoder-Dekoder*.
+* Pozwala dekoderowi na wykrycie i wykorzystanie tylko najważniejszych danych i pominięcie tych mniej znaczących.
+  * Sprawdza podobieństwo między wyjściem Enkodera a poprzednim ukrytym stanem dekodera.
+* Jest odpowiedzią na problem bottleneck'u będący powodem używania wektorów o stałej wielkości jako wejście/wyjście.
+  * Przez to dekoder ma ograniczony dostęp do danych wejściowych.
+  * Szczególnie problematyczne dla bardzo długich sekwencji.
+* Zbiór danych nie musi być sekwencyjny- może być dowolnego rodzaju.
+
+## Zasada działania
+
+* Mechanizm uwagi składa się z 3 głównych komponentów
+  * **Zapytań** $Q$
+  * **Kluczy** $K$
+  * **Wartości** $V$
+* Każdy wektor zapytań (Query Vector) jest porównywany ze zbiorem kluczy aby obliczyć wartości podobieństwa.
+  * Wykorzystuje do tego *Attention Mask*
+    * Opisuje jak bardzo podobny jest dany klucz do zapytania.
+* Obliczone wartości są podawane do funkcji *softmax* by obliczyć wagi.
+* Następnie **Ogólna uwaga** (**Generalized attention**) jest obliczona przez sumę ważoną wartości wektora, gdzie każda wartoś jest sparowana z odpowiednim kluczem.
+* W przypadku tłumaczenia zdań na inny język, każde słowo w zdaniu wejściowym ma przypisane własne zapytania, klucze oraz wartości.
+* Zasadniczo gdy podajemy mechanizmowi uwagi sekwencję słów, pobiera on wektor zapytań powiązany z pewnym słowem w sekwencji wejściowej i ocenia go w odniesieniu do każdego innego klucza w zdaniu. Poprzez wykonanie tego działania możemy się dowiedzieć jak bardzo rozpatrywane słowo jest powiązane z innynmi w zdaniu. Następnie skalowane są te wartości aby model skupił się na słowach najbardziej istotnych dla danego zapytania. Wynikiem tego skalowania jest *Attention Output* rozpatrywanego słowa.
+
+## Self-Attention
+
+* Zapytanie, Klucz i Wartość często pochodzą z inncyh źródeł zależnie od zadania oraz od rodzaju sieci (Enkoder czy Dekoder)
+  * W przypadku tłumaczenia języka język źródłowy jest w Enkoderze, a język docelowy jest w Dekoderze.
+* Nie posiada wiedzy na temat kolejności danych.
+  * Wiedzę na ten temat możemy uzupełnić poprzez dodanie wartości do słowa lub poprzez osadzenie time step'ów (Time Step Embeding)
+* Dla ciekawskich polecam poczytać o BERT.
+
+# Autoenkoder
+
+* Zadaniem modelu jest odwzorowanie infomacji wejściowej na wyjściu.
+  * Jest w stanie nauczyć się bardzo skomplikowanych zależności pomiędzy danymi wejściowymi.
+  * Model nie wymaga nadzwor, należy do *Self-Supervised Learning*.
+  * Zbiór danych wejściowych jest nieetykietowany.
+* Podobnie jak *Enkoder-Dekoder* stosowana do problemów *Sequence to Sequence*.
+  * *Enkoder* służy do kompresji danych wejściowych do niskopoziomej reprezentacji.
+  * *Dekoder* służy do rekonstrukcji oryginalnego obrazu przy podanej niskopoziomowej reprezentacji z Enkodera.
+* Stosowany do kompresji obrazów.
+* Architektura podobna do *MLP* Multi Layer Perceptron.
+  * Tylko trzeba pamiętać, że liczba wejść jest równia liczbie wyjść.
+
+![Architektura Autoenkodera](assets/autoencoder.png)
+
+## Stacked (Deep) Autoencoders
+
+* Autoenkoder z wieloma ukrytymi warstwami
+* Proces rekonstrukcji w Dekoderze traktowany jako problem klasyfikacji binarnej.
+  * Model ma tendencję do szybszej zbieżności.
+
+## Konwolucyjny Autoenkoder
+
+* Enkoder jako sieć *CNN* z warstwami *pooling*
+* Dekoder działa jako **Sieć Dekonwolucyjna**
+  * Sieć bliźniaczo podobna do sieci konwolucyjnej z tą różnicą, że warstwa konwolucyjna jest zamieniowna na **Transponowane Konwolucyjne** warstwy (Transpose Convolutional Layers).
+
+## Rekurencyjny Autoenkoder
+
+* Enkoder jako sieć *Sequence to Vector* RNN
+  * Stosujemy *Sequence to Vector* aby skompresować sekwencję wejściową do pojedyńczego wektora.
+* Dekoder jako sieć *Vector to Sequence* RNN.
+
+
 
 # Porównania
 
