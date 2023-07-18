@@ -1026,7 +1026,82 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
   * Stosujemy *Sequence to Vector* aby skompresować sekwencję wejściową do pojedyńczego wektora.
 * Dekoder jako sieć *Vector to Sequence* RNN.
 
+# GAN (Generative Adversarial Network)
 
+* Posiada w sobie 2 sieci
+  * **Dyskryminator**
+    * Rozróżnia sztuczne dane stworzone przez generator z danymi należącymi do zbioru testowego.
+  * **Generator**
+    * Próbuje odwzorować dane ze zbioru testowego.
+* Model wykorzystujący **Adversarial Training** do trenowania.
+  * Trening następuje przez rywalizujące ze sobą sieci neuronowe.
+* *GAN* jest bardzo wrażliwy na hiperparametry
+  * Warto spędzić dużo czasu na ich dostrojenie
+
+
+
+## Trenowanie GAN
+
+* Na początku trenujemy Dyskryminator, dopiero potem Generator.
+  * Nie chcemy, żeby dyskryminator się uczył na fałszywych danych
+  * Możemy specjalnie nakazać sieci, by nie aktualizowała swoich wag poprzez ustawienie `discriminator.trainable = False`
+* Nie możemy dopuścić do sytuacji kiedy Dyskryminator lub Generator jest skuteczniejszy od drugiego.
+* **Mode collapse**
+  * Dane wygenerowane przez generator są coraz mniej zróżnicowane
+  * Z każdym cyklem parametry oscylują i model staje się niestabilny
+  * Na przemian Dyskryminator rozpoznaje większość danych wygenerowanych i nie rozpoznaje żadnego.
+* **Nash equilibrium**
+  * GAN możemy przedstawić jako *zero-sum game* pomiędzy Generatorem i Dyskryminatorem
+  * Sytuacja w której jakakolwiek zmiana w Dyskryminatorze i Generatorze nie polepszy wydajności modelu.
+  * GAN może osiągnąć tylko jedno equilibrium Nash'a.
+
+![Trening GAN](assets/gan.png)
+
+## Generator
+
+* Tworzy dane, które mają oszukać Dyskryminator
+* *Sieć Dekonwolucyjna*
+* Po każdej warstwie *Conv2D* zaleca się stosować *BatchNormalization* by zapewnić stabilność.
+  * Warstwa ta normalizuje wyjście poprzedniej warstwy przed podaniem go do następnej.
+* Nie chcemy żeby żeby GAN odwzorowywał dane 1:1, dlatego dodajemy na wejście zaszumione dane (możemy zastosować w tym celu `tf.random.normal()`)
+* Powszechną praktyką jest zmniejszanie ilości neuronów w kolejnych warstwach wraz z postępowaniem upsamplingu.
+
+## Dyskryminator
+
+* Sieć prostsza od Generatora.
+* Redukuje dane korzystając warstw *Conv2D*, a na końcu *Flatten* by model określił czy dane są prawdziwe czy też sztuczne.
+* Konieczność użycia *Dropout* o relatywnie dużej wartości (około 0.5, warto sprawdzić jaka wartość najlepiej działa).
+  * Nie chcemy żeby Dyskryminator się przećwiczył. Dla niskiej wartości Dropout Dyskryminator działa za dobrze, nie dając możliwości Generatorowi się nauczyć.
+
+## Rodzaje GAN
+
+### **Conditional GAN** 
+
+  * GAN z dodatkowym wejściem w generatorze określającym przynależność zdjęcia do odpowiedniej klasy.
+### StyleGAN
+
+  * Ulepszona wersja GAN pozwalająca na foto realistyczne zdjęcia twarzy oraz na kontrolę wyjściowego zdjęcia.
+
+
+## Zalecenia w tworzeniu modeli GAN
+
+* Jako funkcję straty używaj *LeakyReLU*
+  * Ale na ostatniej warstwie Generatora *tanh*
+* Stosuj warstwy *BatchNormalization*
+* *kernel_size* musi być podzielny przez *strides*
+* Kiedy ładujemy zdjęcia musimy wartości między -1 a 1.
+* Jako optymizator użyj *Adam*
+* Korzystaj z *label softener*
+  * Dyskryminator zamiast wskazywać przez wartość binarną czy np. obraz jest prawdziwy lub sztuczny, ustawiamy jako wartość w pewnym zakresie.
+    * Na przykład możemy ustawić, że fałszywe etykiety są przypisywane wartością między 0 a 0.3, a prawdziwe dane przypisywane są wartością mniędzy 0.8 a 1.2
+  * Warto jest sprawdzić czy lepiej użyć *label softener* tylko dla prawdziwych etykiet czy też dla obu.
+  
+## Techniki regularyzacyjne 
+
+* Mini-batch Discrimination
+  * Wymusza na generatorze tworzenie bardziej zróżnicowanych danych
+  * Miara jak bardzo podobne są dane na przestrzeni batch'a.
+    * Przekazuje tą miarę dyskryminatorowi.
 
 # Porównania
 
