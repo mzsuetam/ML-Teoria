@@ -961,7 +961,7 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 
 * Tłumaczenie zdań na inny język.
 
-### Attention Mechanisms (Mechanizm Uwagi)
+# Attention Mechanisms (Mechanizm Uwagi)
 
 * Lepsza wydajność względem sieci *Enkoder-Dekoder*.
 * Pozwala dekoderowi na wykrycie i wykorzystanie tylko najważniejszych danych i pominięcie tych mniej znaczących.
@@ -970,6 +970,7 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
   * Przez to dekoder ma ograniczony dostęp do danych wejściowych.
   * Szczególnie problematyczne dla bardzo długich sekwencji.
 * Zbiór danych nie musi być sekwencyjny- może być dowolnego rodzaju.
+* Mechanizm ten różni się od *LSTM* tym, że Mechanizm Uwagi zwraca uwagę na pewne specyficzne elementy lub obiekty zamiast traktować cały obraz w ten sam sposób.
 
 ## Zasada działania
 
@@ -985,6 +986,18 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 * W przypadku tłumaczenia zdań na inny język, każde słowo w zdaniu wejściowym ma przypisane własne zapytania, klucze oraz wartości.
 * Zasadniczo gdy podajemy mechanizmowi uwagi sekwencję słów, pobiera on wektor zapytań powiązany z pewnym słowem w sekwencji wejściowej i ocenia go w odniesieniu do każdego innego klucza w zdaniu. Poprzez wykonanie tego działania możemy się dowiedzieć jak bardzo rozpatrywane słowo jest powiązane z innynmi w zdaniu. Następnie skalowane są te wartości aby model skupił się na słowach najbardziej istotnych dla danego zapytania. Wynikiem tego skalowania jest *Attention Output* rozpatrywanego słowa.
 
+## Logika stojąca za mechanizmem uwagi
+
+* Wyobraź sobie, że przychodzisz w czwartkowy wieczór na miasteczko i kolega wysyła ci zdjęcie gdzie jest. Patrzysz na to zdjęcie i co widzisz?
+
+<p align="center">
+  <img src="assets/miasteczko.png" />
+</p>
+
+* Kiedy mówimy, że coś się widzi, mamy na myśli ciąg akcji, czyli poruszanie wzrokiem i zbieranie informacji na temat tego co jest w naszym polu widzenia. Nie widzisz wszystkich pikseli na raz, tylko  zwracasz uwagę na poszczególne elementy obrazu jeden po drugim w celu zebrania pełnej informacji. Nawet w takim zatłoczonym obrazku możesz rozpoznać wujaszka Billiego czy pana starostę. Wynika to z tego, że zajmujesz się pewnymi istotnymi aspektami podanego obrazu zamiast sprawdzać piksel po pikselu.
+* To jest właśnie ta mechanika, którą chcemy dać naszemu modelowi przez mechanizm uwagi.
+* Możemy o tym pomyśleć jako pewna regularyzacja. Model nie będzie marnował czasu na bezmyślnym przeszukiwaniu obrazu, tylko skupi się na tym co jest ważne.
+
 ## Self-Attention
 
 * Zapytanie, Klucz i Wartość często pochodzą z inncyh źródeł zależnie od zadania oraz od rodzaju sieci (Enkoder czy Dekoder)
@@ -992,6 +1005,13 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 * Nie posiada wiedzy na temat kolejności danych.
   * Wiedzę na ten temat możemy uzupełnić poprzez dodanie wartości do słowa lub poprzez osadzenie time step'ów (Time Step Embeding)
 * Dla ciekawskich polecam poczytać o BERT.
+
+## Soft Attention i Hard Attention
+
+* W "*Logika stojąca za mechanizmem uwagi*" mamy przedstawiony przykład *Hard Attention* z tego powodu, iż model nie używa wszystkich danych wejściowych do obliczenia *Uwagi*.
+  * To które dane pomijamy w obliczaniu uwagi jest zadaniem sieci neuronowej.
+* W przypadku *Soft Attention* wszystkie dane wejściowe są uwzględniane w obliczaniu Uwagi.
+* *Soft Attention* jest bardziej popularną opcją przez większą efektywność procesu propagacji wstecznej.
 
 # Autoenkoder
 
@@ -1038,7 +1058,49 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 * *GAN* jest bardzo wrażliwy na hiperparametry
   * Warto spędzić dużo czasu na ich dostrojenie
 
+## Generator
 
+* Tworzy dane, które mają oszukać Dyskryminator
+* *Sieć Dekonwolucyjna*
+* Po każdej warstwie *Conv2D* zaleca się stosować *BatchNormalization* by zapewnić stabilność.
+  * Warstwa ta normalizuje wyjście poprzedniej warstwy przed podaniem go do następnej.
+* Nie chcemy żeby żeby GAN odwzorowywał dane 1:1, dlatego podajemy na wejście zaszumione dane (możemy zastosować w tym celu `tf.random.normal()`)
+* Powszechną praktyką jest zmniejszanie ilości neuronów w kolejnych warstwach wraz z postępowaniem upsamplingu.
+
+### Implementacja
+
+* W tym przykładzie będziemy pracować nad zbiorem **CIFAR100**. Jest to zbiór kolorowych obrazków 32x32x3, który możemy pobrać przez `keras.datasets.cifar100.load_data()`
+  
+* Jako pierwszą warstwę dajemy *Dense Layer*, która pobiera dane wejściowe. Trzeba pamiętać by ta warstwa miała wystarczającą ilość neuronów do przechowania zredukowanej wersji obrazu.
+
+```python
+keras.layers.Dense(4 * 4 * 128, input_shape=[noise_input], 
+						activation=keras.layers.LeakyReLU(alpha=0.2)), 
+keras.layers.Reshape([4, 4, 128]),
+```
+
+* Aktualnie mamy obraz o wymiarach 4x4x128 a chcemy żeby miał taki sam jak dane wejściowe, czyli 32x32x3. Dlatego też będziemy wykonywać *Dekonwolucję*, upsampling wykorzystując parametr *strides* w warstwie *Conv2DTranspose*
+
+```python
+keras.layers.Conv2DTranspose(128, kernel_size=4, strides=2, padding="SAME", 
+                                 activation=keras.layers.LeakyReLU(alpha=0.2)),
+keras.layers.BatchNormalization(),
+```
+
+* Jako, że *strides* wynosi 2, wynikiem tej warstwy jest obraz 8x8x3 (Strides (2,2) zwraca taki sam rozmiar obrazu co przy 2).
+* Stosujemy *BatchNormalization* do znormalizowania wyników poprzedniej warstwy i do zwiększenia stabilności modelu.
+* Jako finalną warstwę powinniśmy dać *Conv2D* z funkcją aktywacji *tanh*, ponieważ chcemy mieć wartości pomiędzy -1 a 1.
+
+```python
+keras.layers.Conv2D(3, kernel_size=5, activation='tanh', padding='same')
+```
+
+## Dyskryminator
+
+* Sieć prostsza od Generatora.
+* Redukuje dane korzystając warstw *Conv2D*, a na końcu *Flatten* by model określił czy dane są prawdziwe czy też sztuczne.
+* Konieczność użycia *Dropout* o relatywnie dużej wartości (około 0.5, warto sprawdzić jaka wartość najlepiej działa).
+  * Nie chcemy żeby Dyskryminator się przećwiczył. Dla niskiej wartości Dropout Dyskryminator działa za dobrze, nie dając możliwości Generatorowi się nauczyć.
 
 ## Trenowanie GAN
 
@@ -1057,27 +1119,52 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 
 ![Trening GAN](assets/gan.png)
 
-## Generator
+### Implementacja
 
-* Tworzy dane, które mają oszukać Dyskryminator
-* *Sieć Dekonwolucyjna*
-* Po każdej warstwie *Conv2D* zaleca się stosować *BatchNormalization* by zapewnić stabilność.
-  * Warstwa ta normalizuje wyjście poprzedniej warstwy przed podaniem go do następnej.
-* Nie chcemy żeby żeby GAN odwzorowywał dane 1:1, dlatego dodajemy na wejście zaszumione dane (możemy zastosować w tym celu `tf.random.normal()`)
-* Powszechną praktyką jest zmniejszanie ilości neuronów w kolejnych warstwach wraz z postępowaniem upsamplingu.
+* Przykład GAN generujące obrazy 32x32x3.
+* Na początek ćwiczymy *Dyskryminator*.
+* Musimy dodać szum do danych wejściowych z powodu wyżej opisanego.
 
-## Dyskryminator
+```python
+noise = tf.random.normal(shape=[batch_size, random_normal_dimensions])
 
-* Sieć prostsza od Generatora.
-* Redukuje dane korzystając warstw *Conv2D*, a na końcu *Flatten* by model określił czy dane są prawdziwe czy też sztuczne.
-* Konieczność użycia *Dropout* o relatywnie dużej wartości (około 0.5, warto sprawdzić jaka wartość najlepiej działa).
-  * Nie chcemy żeby Dyskryminator się przećwiczył. Dla niskiej wartości Dropout Dyskryminator działa za dobrze, nie dając możliwości Generatorowi się nauczyć.
+# Przekazujemy teraz szum do generatora, by stworzył sztuczne obrazki.  
+fake_images = generator(noise)
+
+# Tworzymy etykiety: 0 dla sztucznych, 1 dla prawdziwych zdjęć. 
+mixed_images = tf.concat([fake_images, real_images], axis=0)
+discriminator_labels = tf.constant([[0.]] * batch_size + [[1.]] * batch_size)
+
+# Wagi dyskryminatora muszą być trenowalne. 
+discriminator.trainable = True
+
+# Ćwiczenie Dyskryminatora. 
+discriminator.train_on_batch(mixed_images, discriminator_labels)
+```
+* Ćwiczenie Generatora
+
+```python
+# Ponownie tworzymy szum. 
+noise = tf.random.normal(shape=[batch_size, random_normal_dimensions])
+
+# WSZYSTKIE obrazy oznaczamy jako prawdziwe. 
+generator_labels = tf.constant([[1.]] * batch_size)
+
+# Wyłączamy możliwość trenowania wag dyskryminatora.
+discriminator.trainable = False
+
+# Ćwiczymy całą sieć GAN korzystając z szumu stworzonego. 
+gan.train_on_batch(noise, generator_labels)
+```
+* W początkowych epokach *Dyskryminator* będzie w stanie rozpoznać wszystkie sztuczne obrazy. W wyniku czego generator będzie modyfikować swoje wagi.
+* Generator będzie się uczył zależnie od tego, jak dobrze będzie oszukiwać *Dyskriminatora*. Dlatego na początku ćwiczymy dyskryminatora, a dopiero potem generator.
 
 ## Rodzaje GAN
 
 ### **Conditional GAN** 
 
   * GAN z dodatkowym wejściem w generatorze określającym przynależność zdjęcia do odpowiedniej klasy.
+  
 ### StyleGAN
 
   * Ulepszona wersja GAN pozwalająca na foto realistyczne zdjęcia twarzy oraz na kontrolę wyjściowego zdjęcia.
@@ -1102,6 +1189,61 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
   * Wymusza na generatorze tworzenie bardziej zróżnicowanych danych
   * Miara jak bardzo podobne są dane na przestrzeni batch'a.
     * Przekazuje tą miarę dyskryminatorowi.
+
+# Reinforcement Learning (Uczenie przez wzmacnianie)
+
+* Uczenie modelu opiera się na dobraniu optymalnego zachowania w środowisku, aby uzyskać maksymalną nagrodę. Np. Przejście robota z punktu A do punktu B najszybszą i najmniej wymagającą trasą.
+* Podstawą uczenia modelu jest mechanika akcji i nagrody/kary. Agent dokonuje pewnej interakcji z otoczeniem dostając informację zwrotną czy akcja miała jakiś wpływ na zamierzony efekt końcowy.
+* Uczenie modelu jest dosyć ciężkie przez dużą niestabilność oraz przez dużą wrażliwość na hiperparametry.
+
+![Uczenie przez wzmacnianie z użyciem sieci neuronowej do wyszukiwania polityki](assets/reinforcement-learning.png)
+
+## Terminologia
+
+* **Agent** i **Środowisko** (**Environment**)
+  * Określenia bardzo ogólne mające wiele znaczeń zależnie od problemu w którym używamy *Reinforcement Learning*.
+  * Kilka przykładów:
+    * Program sterujący robotem. W tym przypadku środowiskiem jest (Symulowany albo prawdziwy).
+    * Program grający w Pac-Man'a. Środowiskiem jest symulacja gry.
+    * Program grający w Go. Środowiskiem jest plansza.
+    * Agentem może być nawet termostat kontrolujący temperaturę środowiska.
+  * Agent wpływa na środowisko swoimi akcjami.
+  
+## Policy Search (Wyszukiwanie Polityki)
+
+* Algorytm używany do określenia możliwych akcji.
+* Może być siecią neuronową.
+* Może być algorytmem stochastycznym.
+
+### Neural Notwork Policies czyli użycie sieci neuronowej do wyszukiwania polityki
+
+* Zasada działania:
+  * Wybierz losową informację bazującą na prawdopodobieństwu podanym przez sieć.
+  * Daj Agentowi znaleźć balans między eksploracją a eksploatacją akcji.
+  
+### Explore Policy Space (Eksploracja przestrzeni polityki)
+
+* Szuka najlepszych wartości dla danej polityki
+* Używa technik optymalizacji *Policy Gradients*
+* Stosuje **algorytmu genetycznego**.
+  * Algorytm zainspirowany teorią ewolucji, a dokładniej selekcją naturalną.
+  * Początkowo tworzymy 1 generację z losowymi cechami i wypuszczamy go do środowiska. Mierzymy ich skuteczność w osiągnięciu zamierzonego celu i usuwamy np. 80% najgorzej działających aktorów. Następnie pozwalamy reszcie "stworzyć potomstwo" by liczebność wszystkich aktorów w kolejnej generacji była taka sama. Potomstwo jest kopią rodzica z losowymi różnicami (ilość i rozmiar różnicy możemy modyfikować). Cykl się zapętla do momentu aż uznamy, że wynik jest satysfakcjonujący.
+
+![Przykład algorytmu genetycznego uczącego się prowadzić pojazdem w labiryncie](assets/genetic-algorithm-in-action.png)
+
+## Credit Assignment Problem 
+
+* Występuje gdy nagrody są bardzo rzadkie i opóźnione
+* Model nie wie po których akcjach został nagrodzony
+* Jak ten rozwiązać ten problem?
+  * *Action Advantage* 
+    * Jak wykonana akcja ma się średnio z innymi akcjami.
+  * Ocena akcji na podstawie sumy wszystkich nagród, zastosowując ***discount factor* $\gamma$** na każdym kroku
+    * Discount Factor- To co zwraca akcja.
+
+## Catastrophic Forgetting 
+* Nowo nauczona wiedza nadpisuje tą starszą.
+  * Występuje gdy doświadczenia są współzależne.
 
 # Porównania
 
