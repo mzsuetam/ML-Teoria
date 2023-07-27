@@ -913,9 +913,34 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
   * Jak już musisz to stosuj pomiędzy warstwami rekurencyjnymi
 * *Layer Normalization*
 
+## Wady RNN
+
+* Wolno się uczy
+* Długie sekwencje powodują zanikanie gradientu lub zapomnienie długoterminowych zależności. Pamięć zwykłej sieci rekurencyjnej nie jest tak dobra jeśli chodzi o zapamiętywanie zależności.
+  * Pzykład: Dla zdania "chmury są na ______" RNN spokojnie sobie poradzi łącząc zależność między niebem a chmurami. Dla zdania "Wychowałem się w Niemczech wraz z moim rodzeństwem. Spędziłem wiele lat tam i nauczyłem się bardzo wiele na temat ich kultury i obyczajów. Dlatego też mówię płynnie po _________" sieć będzie miała duży problem z przewidzeniem, ponieważ dystans między Niemcami a przewidywanym słowem jest o wiele większy.
+
+
 ## Przygotowanie danych do RNN
 
+* Musimy pamiętać, że kolejność danych ma znaczenie, dlatego dzieląc zbiór musimy zapewnić zachowanie kolejności danych. 
+  ```python
+  X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.3, shuffle=False, random_state=42)
+  ```
+  * `Shuffle = False` zapewnia zachowanie tej kolejności.
+* Najbezpieczniej jest dzielić dane ze względu na czas (Jeśli operujemy na danych czasowych na przestrzeni np. 10 lat, to możemy ostatnie 2 lata zarezerwować na zbiór testowy)
+  * Zakładamy, że dane są stacjonarne- zależność danych jest niezmienna
 
+### Dzielenie sekwencyjnego zestawu danych na wiele okien
+
+* Konwersja długiej sekwencji danych na wiele krótszych sekwencji.
+
+### Sezonowość
+
+![Przykłady zbiorów danych posiadających sezonowość](assets/seasonality.png)
+
+* Sezonowością nazywamy regularną, okresową zmianę w śreniej badanej wartości.
+* Sezonowość powiązana jest z czasem. Możemy zaobserwować sezonowość w przeciągu dnia, tygodnia, roku itd.
+* Sezonowość jest napędzana cyklami świata przyrody (pory roku, cykl dnia/nocy) lub konwencjami zachowań społecznych dotyczących dat i godzin (Święta, czwartki studenckie).
 
 # Sieci Enkoder-Dekoder
 
@@ -984,7 +1009,18 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 * Obliczone wartości są podawane do funkcji *softmax* by obliczyć wagi.
 * Następnie **Ogólna uwaga** (**Generalized attention**) jest obliczona przez sumę ważoną wartości wektora, gdzie każda wartoś jest sparowana z odpowiednim kluczem.
 * W przypadku tłumaczenia zdań na inny język, każde słowo w zdaniu wejściowym ma przypisane własne zapytania, klucze oraz wartości.
+* Dla lepszego wyjaśnienia tych komponentów wyobraźmy sobie wyszukiwarkę Google. Wpisując pewien tekst który później wyszukujemy możemy nazwać *Zapytaniem*. Wynikami wyszukiwania nazwiemy *Kluczami*, a treść tych wyszukiwań *Wartościami*. Dlatego szukając najlepszych dopasowań, musimy dla *Zapytania* znaleźć jak najbedziej podobny *Klucz*.  
 * Zasadniczo gdy podajemy mechanizmowi uwagi sekwencję słów, pobiera on wektor zapytań powiązany z pewnym słowem w sekwencji wejściowej i ocenia go w odniesieniu do każdego innego klucza w zdaniu. Poprzez wykonanie tego działania możemy się dowiedzieć jak bardzo rozpatrywane słowo jest powiązane z innynmi w zdaniu. Następnie skalowane są te wartości aby model skupił się na słowach najbardziej istotnych dla danego zapytania. Wynikiem tego skalowania jest *Attention Output* rozpatrywanego słowa.
+
+### Miara podobieństwa
+
+* **Cosine Similarity** (Podobieństwo Cosinusowe)
+  * Wartości pomiędzy -1 a 1, gdzie 1 to najbardziej podobne, a -1 totalnie niepodobne.
+  ![Podobieństwo cosinusowe](assets/cosine-similarity.png)
+  * Powyższy wzór możemy przepisać:\
+      $Similarity(A,B) = \frac{A.B^T}{scaling}$
+  * Ponieważ liczymy podobieństwo między *Query* a *Key* możemy powyższy wzór finalnie przepisać: \
+      $Similarity(Q,K) = \frac{Q.K^T}{scaling}$
 
 ## Logika stojąca za mechanizmem uwagi
 
@@ -1208,7 +1244,54 @@ gan.train_on_batch(noise, generator_labels)
     * Program grający w Go. Środowiskiem jest plansza.
     * Agentem może być nawet termostat kontrolujący temperaturę środowiska.
   * Agent wpływa na środowisko swoimi akcjami.
+
+![Podział Reinforcement Learning źródło: https://doi.org/10.52843/cassyni.ss11hp](assets/model-based-model-free-rl.png)
+
+## Credit Assignment Problem 
+
+* Występuje gdy nagrody są bardzo rzadkie i opóźnione
+* Model nie wie po których akcjach został nagrodzony
+* Jak ten rozwiązać ten problem?
+  * *Action Advantage* 
+    * Jak wykonana akcja ma się średnio z innymi akcjami.
+  * Ocena akcji na podstawie sumy wszystkich nagród, zastosowując ***discount factor $\gamma$*** na każdym kroku
+    * $\gamma \in [0,1)$
+      * Przyspieszamy zbieżność niektórych algorytmów dając $\gamma$ mniejszą od 1.
+    * Opisuje jak bardzo agenta obchodzą nagrody w dalekiej przyszłości relatywnie do tych w bliskiej przyszłości.
+      * Dla $\gamma=0$ agenta będzie obchodziła tylko największa nagroda w tym momencie.
+      * Dla $\gamma \approx 1$ agent ocenia każdą akcję bazując na sumie wszystkich przyszłych nagród.
+  * Dla przykładu weźmy poniższą sytuację. Jeżeli agent zdecyduje się na 3 ruchy w prawo, dostanie on nagrodę w następujących krokach 10, 0, -50. Natomiast jeśli użyjemy *discount factor $\gamma =0.8$, pierwsza akcja zwróci nam wartość $10+\gamma \times 0 + \gamma^2 \times (-50) = -22$.
+
+![](assets/discount-factor.png)
+
+* Dla lepszego zrozumienia natury *Credit Assignment Problem* będziemy rozważać przykład algorytmu uczącego się grania w grę Pong.
+
+![Pong](assets/pong.png)
+
+* Podczas ćwiczenia agenta wystąpią 2 różne scenariusze- wygrana lub przegrana. Kiedy wystąpi scenariusz, w którym agent przegrał, algorytm odrzuci lub obniży prawdopodobieństwo serii akcji, które wystąpiły w tym scenariuszu.
+
+![](assets/rf-bad-scenario.png)
+
+* Problem występuje w momencie gdy początkowe kroki były dobre, a tylko ostatnie 2 kroki spowodowały przegraną. Nie ma sensu odrzucać wszystkich akcji, lecz tylko te, które prowadziły do porażki.
+
+![](assets/rf-proper-scenario.png)
+
+* Właśnie tym problemem jest *Credit Assignment Problem*.
+
+### Maksymalizacja nagrody
+
+* Agent kieruje się maksymalizacją nagrody, dlatego też model ten powinien zwrócić najbardziej optymalne akcje dające największą nagrodę.
+* Skumulowaną nagrodę w każdym kroku czasowym w zależności od odpowiedniego kroku możemy zapisać jako: 
+    $$G_t=\sum_{k=0}^{T}R_{T+k+1}$$
+* Wzór jednak okazuje się niekompletny. Jak spojrzymy na poniższy przykład to szybko zobaczymy, że nasz agent (mysz) maksymalizując nagrodę (ser) nie uwzględnia niebezpieczeństwa jakim są koty lub porażenie prądem.
+
+![](assets/max-reward.png)
   
+* W celu rozwiązania tego problemu dodajemy wyżej opisany *Discount Factor $\gamma$*
+
+  $$G_t=\sum_{k=0}^{T}\gamma^kR_{T+k+1}$$
+
+
 ## Policy Search (Wyszukiwanie Polityki)
 
 * Algorytm używany do określenia możliwych akcji.
@@ -1221,6 +1304,14 @@ gan.train_on_batch(noise, generator_labels)
   * Wybierz losową informację bazującą na prawdopodobieństwu podanym przez sieć.
   * Daj Agentowi znaleźć balans między eksploracją a eksploatacją akcji.
   
+### Kompromis między Eksploracją a Eksploatacją
+
+* Eksploracja, jak nazwa mówi, ma za zadanie znalezienie informacji na temat środowiska w którym się znajduje.
+* Eksploatacja jest wykorzystywaniem już znanej wiedzy w celu maksymalizacji nagrody.
+* Eksploatacja jest dobra na krótką metę, ale nie wiemy czy eksporacja nie da nam o wiele lepszego wyniku na dłuższą metę.
+
+![](assets/exploration-exploatation-tradeoff.png)
+
 ### Explore Policy Space (Eksploracja przestrzeni polityki)
 
 * Szuka najlepszych wartości dla danej polityki
@@ -1231,19 +1322,77 @@ gan.train_on_batch(noise, generator_labels)
 
 ![Przykład algorytmu genetycznego uczącego się prowadzić pojazdem w labiryncie](assets/genetic-algorithm-in-action.png)
 
-## Credit Assignment Problem 
-
-* Występuje gdy nagrody są bardzo rzadkie i opóźnione
-* Model nie wie po których akcjach został nagrodzony
-* Jak ten rozwiązać ten problem?
-  * *Action Advantage* 
-    * Jak wykonana akcja ma się średnio z innymi akcjami.
-  * Ocena akcji na podstawie sumy wszystkich nagród, zastosowując ***discount factor* $\gamma$** na każdym kroku
-    * Discount Factor- To co zwraca akcja.
-
 ## Catastrophic Forgetting 
 * Nowo nauczona wiedza nadpisuje tą starszą.
   * Występuje gdy doświadczenia są współzależne.
+
+## Multi-Agent Reinforcement Learning
+
+* Skupione na nauce zachowania wielu agentów, którzy koegzystują w jednym środowisku. Każdy agent korzysta w pewnym stopniu z algorytmów uczenia ze wzmacnianiem.
+
+![Copyright Justin Terry 2021](assets/multi-agent-rf.png)
+
+### Rodzaje Multi-Agent system:
+
+* ***Kooperacyjny***
+  * Agenci o podobnych celach komunikują się między sobą i współpracują do wspólnego celu. 
+* ***Rywalizujący***
+  * Agenci rywalizują między sobą. 
+  * Zadaniem agenta jest zmaksymalizowanie swojego wyniku, a co za tym idzie, zminilizować wynik innych agentów.
+* ***Mieszany***
+  * Połączenie modelu *Kooperacyjnego* z *Rywalizującym*
+  * Na przykład mecz koszykówki rozgrywany między 2 zespołami agentów.
+
+## Markov Decision Processes
+
+* Graf skierowany o określonej ilości krawędzi i wierzchołków. Wierzchołek jest zmieniany z prawdopodobieństwem określonym przez wagę krawędzi.
+* Stan $s_0$ ma prawdopodobieństwo przejścia do wierzchołka $s_1$ wynoszące 0.2, $s_3$ 0.1 oraz $s_0$ 0.7.
+
+![Łańcuch Markowa](assets/markov-chain.png)
+
+* Za pomocą Łańcucha Markowa możemy przedstawić jako akcje które może agent wykonać w danym środowisku. 
+* Istnieje jednak pewna różnica, agent może wybrać jedną z kilku możliwych akcji i prawdopodobieństwo przejścia do kolejnego stanu zależy od akcji agenta. Dodatkowo niektóre krawędzie zwracają pewną wartość nagrody/kary. 
+* Zadaniem agenta jest znalezienie takiej polityki, która pozwoli zmaksymalizować wartość nagrody w czasie.
+* Reprezentacją tą nazywamy ***Proces Decyzyjny Markowa*** (Markov Decision Process).
+
+![Przykład Procesu Decyzyjnego Markowa](assets/markov-decision-process.png)
+
+## Q-Learning
+
+* Polityka uczenia ze wzmacnianiem, która znajduje najlepszą następną akcję, przy podanym aktualnym stanie agenta.
+* Jest polityką bez modelu
+  * Uczy się metodą prób i błędów. 
+  * Nie korzysta z systemu nagród.
+  * Agent dobiera akcje w zależności od własnych predykcji reakcji otoczenia na jego zachowanie.
+* W dążeniu do tego celu, agent może wymyślić swoje własne zasady albo nie będzie się słuchać tych podanych. Dlatego mówimy, że funkcjonuje bez polityki.
+* Przykładem mogą być reklamy na stronie internetowej. 
+
+### Q-Value (Quality Value)
+
+* Określa jak dobrze pewna akcja $a$ jest dla pewnego stanu $s$
+  * Zapisujemy ją jako funkcję $Q(s,a)$
+  * Optymalną wartość $Q$ oznaczamy $Q^*(s,a)$
+* *Q-Learning* jest procesem uczenia się funkcji $Q$ bazując tylko na doświadczeniu.
+  
+### Q-Table
+
+* Podczas działania algorytmu *Q-Learning* agent będzie znajdywać się w sytuacji, kiedy będzie miał wiele akcji do wyboru. Stosujemy wtedy *Q-Table* do znalezienia najlepszej akcji.
+  
+### Uczenie Monte Carlo
+
+* Najprostsze podejście do uczenia przez doświadczenie.
+* Następuje przez losowe próbkowanie przestrzenii akcja-stan.
+* Wymagamy od *RL* by był **Epizodyczny**
+  * Mamy określony start i koniec po pewnej skończonej liczbie akcji, co prowadzi do skumulowanej nagrody na końcu każdego *epizodu*.
+  * Dobrym przykładem są gry.
+* W przypadku tego uczenia, skumulowana nagroda pod koniec *epizodu* jest używana do określenia *Quality function $Q$* przez podzielenie finalnej nagrody równo przez wszystkie pary akcja stan. Dlatego też jest to jeden z najprostszych podejść, który rozwiązuje *Credit Assignment Problem*; Kredyt jest równo rozdzielany przez wszystkie przejściowe kroki. Również z tego powodu *Uczenie Monte Carlo* jest wyjątkowo narażone na niedostateczne próbkowanie (Szczególnie jest to widoczne,gdy nagrody są rzadkie).
+
+### Temporal Difference (TD) Learning
+
+* Kolejny sposób uczenia bazujący na próbkowaniu.
+* Ma takie samo zadanie jak *Uczenie Monte Carlo*.
+* W przeciwieństwie do Monte Carlo, nie jest ograniczony przez *epizodyczność*.
+* Szacuje aktualny stan bazując na poprzednio nauczonych szacunkach stanów. Podejścia znane jako *Bootstraping*.
 
 # Porównania
 
