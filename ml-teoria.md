@@ -70,7 +70,7 @@ $$ \textit{F1-score} = \frac{2}{\frac{1}{Precision} + \frac{1}{Recall}} $$
   
 ## ***Regresja***
 
-Mean square error (błąd średnio kwadratowy):
+### Mean square error (błąd średnio kwadratowy):
 
 $$ MSE(x, y) = \frac{1}{n} \sum_{i=1}^{n}{(f(x_{i}) - y_{i})^2} $$
 
@@ -79,7 +79,7 @@ $$ MSE(x, y) = \frac{1}{n} \sum_{i=1}^{n}{(f(x_{i}) - y_{i})^2} $$
 * Gdy funkcja f jest różniczkowalna, to MSE jest różniczkowalny ze względu na parametry funkcji f
 * Równoważna z normą $l_2$ (Norma Euklidesowa)
 
-Mean absolute error (błąd średnio bezwzględny):
+### Mean absolute error (błąd średnio bezwzględny):
 
 $$ MAE(x, y) = \frac{1}{n} \sum_{i=1}^{n}{|f(x_{i}) - y_{i}|} $$
 
@@ -88,7 +88,7 @@ $$ MAE(x, y) = \frac{1}{n} \sum_{i=1}^{n}{|f(x_{i}) - y_{i}|} $$
 * Stosowane gdy jest dużo *outlier'ów* w zbiorze
 * Równoważna z normą $l_1$ (Norma Manhattan) 
 
-Entropia:
+### Entropia:
 
 $$ H(X) = -\sum_{i=1}^{n}{p(x_{i}) \log{p(x_{i})}} $$
 
@@ -97,7 +97,7 @@ $$ H(X) = -\sum_{i=1}^{n}{p(x_{i}) \log{p(x_{i})}} $$
 * Tworzy zbilansowane drzewa
 * Tak dzielimy zbiór tworząc drzewa, aby zysk entropii był jak największy (dowiadujemy się najwięcej dzieląc w ten sposób)
 
-Gini:
+### Gini:
 
 $$ Gini(X) = 1 -\sum_{i=1}^{n}{p(x_{i})^2} $$
 
@@ -108,7 +108,7 @@ $$ Gini(X) = 1 -\sum_{i=1}^{n}{p(x_{i})^2} $$
 * Jest maksymalna gdy instancje są równomiernie rozłożone po klasach
 * Wykorzystywana w algorytmie *CART* (Classification and Regression Tree).
 
-Entropia krzyżowa:
+### Entropia krzyżowa:
 
 $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 
@@ -175,8 +175,6 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 
 * Zwiększenie złożoności modelu prowadzi do zwiększenia *Variance* i zmniejszenia *Bias'u* i vice versa.
 
----
-
 ## Regularyzowane modele liniowe
 
 ### Ridge Regression
@@ -196,8 +194,6 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 
 * Zatrzymuje proces uczenia w momencie gdy *błąd walidacji* osiąga minimum.
 
----
-
 
 # SVM (Support Vector Machines)
 
@@ -206,7 +202,7 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 ![Porównanie regresji liniowej (lewy wykres) z SVM (prawy wykres)](assets/SVM.png)  
 
 * Wrażliwy na skalowanie danych (Zawsze skalować przed użyciem)
-* 
+
 ## Hard Margin Classification
 
 * Wszystkie instancje muszą się znaleźć poza marginesem.
@@ -245,18 +241,6 @@ $$ H(p, q) = -\sum_{i=1}^{n}{p(x_{i}) \log{q(x_{i})}} $$
 $J(k, t_k) = \frac{m_{lewa}}{m} * G_{lewa} + \frac{m_{prawa}}{m} * G_{prawa}$, gdzie $G_{lewa}$ i $G_{prawa}$ wyrażają nieczystości lewej i prawej części po podziale, a $m_{lewa}$ i $m_{prawa}$ to liczba instancji w lewej i prawej części, $m$ to liczba wszystkich instancji
 * Obrót przestrzeni instancji może całkowicie zmieniać wygenerowane drzewo i jego złożoność.
 
-### White Box vs Black Box
-
-* W przypadku *Black Box* ciężko jest sprawdzić dlaczego dany model podjął taką decyzję
-* Dla modeli, które nie są *White Box* bardzo trudnym zadaniem jest dokładne określenie wnioskowania przeprowadzonego przez model, które może być łatwo zrozumiane przez człowieka0
-* Przykłady *White Box*:
-  * Drzewa decyzyjne
-  * Regresja Liniowa
-  * SVM
-* Przykłady *Black Box*:
-  * Sieci neuronowe
-  * Random Forests
-
 ### Hiperparametry
 
 * Bez żadnych ograniczeń model bardzo szybko przeucza się (Wtedy go nazywamy nieparametrycznym, opisany wyżej)
@@ -277,7 +261,7 @@ $J(k, t_k) = \frac{m_{lewa}}{m} * G_{lewa} + \frac{m_{prawa}}{m} * G_{prawa}$, g
 * Wszystkie klasyfikatory powinny być od siebie niezależne
 * Redukuje *Bias* i *Variance*
 
-## W problemie klasyfikacji rozróżniamy 2 rodzaje klasyfikatorów:
+## Klasyfikacja
 
 
 ### *Hard Voting Classifier*
@@ -367,7 +351,7 @@ $J(k, t_k) = \frac{m_{lewa}}{m} * G_{lewa} + \frac{m_{prawa}}{m} * G_{prawa}$, g
 * Uogólnienie wartości własnych i wektorów własnych na macierze niekwadratowe
 * Największe wartości singularne odpowiadają kierunkom, które zachowują najwięcej informacji.
 
-## Incremental PCA 
+### Incremental PCA 
 * minibatch, out-of-core, praca na strumieniach, trzeba podać liczbę wymiarów
 * Czyli w sumie po prostu PCA na online(minibatches), gdzie nie ładujemy całego zestawu danych na raz do modelu
 
@@ -405,10 +389,10 @@ Kategorie uczenia nienadzorowanego:
   * detekcja wartości odstających, *outlierów*
 * Estymacja gęstości *density estimation*
 
-![Różnica między uczeniem nadzorowanym a nienadzorowanym](assets/nienadzorowane.png)
+![Różnica między danymi wejściowymi w uczeniu nadzorowanym i nienadzorowanym](assets/nienadzorowane.png)
 
 ## Soft Clustering
-* Przypisuje każdej instancji wynik przypisywany dla każdego klastra.
+* Do każdej instancji przypisywany jest wektor wyników przypisania do każdego z klastrów.
   * Wynikiem może być np. dystans pomiędzy instancją a centroidą.
 
 ## Hard Clustering
@@ -440,7 +424,7 @@ Kategorie uczenia nienadzorowanego:
   * brana pod uwagę jest odległość od instancji do sąsiada (średnia ważona) (tylko dla regresji)
   * średnia wartość wszystkich instancji o tej samej odległości (tylko dla regresji)
 
-![Przedstawienie działania alg. KNN](assets/knn.png)
+![Przedstawienie działania alg. KNN](assets/knn.png){ width=60% }
 
 ## Algorytm centroidów (k-średnich) *K-Means*
 
@@ -491,7 +475,6 @@ $$ s = \frac{1}{k} \sum^k_{i=1} \frac{b_i-a_i}{max(a_i,b_i)} $$
 
 ## Perceptron
 
-* Składają się z jednej warstwy neuronów
 * Każdy neuron jest jednostką liniową, po której następuje funkcja aktywacji
 * Sposób działania:
   * oblicz sumę wejść $z = w_1x_1 + w_2x_2 + ... + w_nx_n = x^Tw$
@@ -499,7 +482,7 @@ $$ s = \frac{1}{k} \sum^k_{i=1} \frac{b_i-a_i}{max(a_i,b_i)} $$
 * Ograniczenia:
   * Nie potrafią rozwiązać pewnych trywialnych problemów, np. XOR. W takich przypadkach stosuje się **sieci wielowarstwowe (MLP)**
 
-![Alt text](assets/perceptron.png)
+![Schemat poglądowy perceptronu](assets/perceptron.png)
 
 
 ### Uczenie perceptronu
@@ -522,9 +505,11 @@ $$ s = \frac{1}{k} \sum^k_{i=1} \frac{b_i-a_i}{max(a_i,b_i)} $$
 * Potrzebujemy dobrze zdefiniowanej niezerowej pochodnej
   * *Gradient Descent* robi progres w każdym kroku. 
 
+### Funkcje aktywacji - przegląd
+
 Poniższa lista jest ułożona od najlepszych funkcji aktywacji (oprócz ``softmax``).
 
-1. SeLU (Skalowana liniowa jednostka eksponencjalna)
+1. SeLU (Scaled Exponential Linear Unit)
   * Najlepsze dla *Głębokiej Sieci Neuronowej* 
   * Potrafi się samodzielnie znormalizować
     * Rozwiązuje problem znikających i eksplodujących gradientów.
@@ -563,7 +548,9 @@ Poniższa lista jest ułożona od najlepszych funkcji aktywacji (oprócz ``softm
   
     $$ Softmax(z)_j = \frac{e^{z_j}}{\sum_{k=1}^K e^{z_k}} $$
   
-![Wykresy omawianych funkcji aktywacji](assets/funkcje-aktywacji.png)
+![Wykresy wybranych funkcji aktywacji](assets/funkcje-aktywacji.png)
+
+![Wykresy wybranych funkcji aktywacji - porównanie ReLU, ELU, SeLU](assets/funkcje-aktywacji-2.png)
 
 
 ## Warstwy
@@ -624,10 +611,10 @@ model = tf.keras.Model(inputs=[input_], outputs=[output])
 
 Po utworzeniu modelu należy go skompilować za pomocą metody ```compile()```. Metoda ta przyjmuje następujące parametry: 
 
-* ```optimizer```: Określa **optymalizator** używany do aktualizacji wag modelu podczas procesu uczenia.Optymalizator reguluje sposób, w jaki model aktualizuje wagi na podstawie straty i algorytmu optymalizacji. Ich argumentem jest m.in. ```learning_rate```. Przykładowe optymalizatory:
+* ```optimizer```: Określa **optymalizator** używany do aktualizacji wag modelu podczas procesu uczenia. Optymalizator reguluje sposób, w jaki model aktualizuje wagi na podstawie straty i algorytmu optymalizacji. Ich argumentem jest m.in. ```learning_rate```. Przykładowe optymalizatory:
 
   * ***SGD*** - Stochastic Gradient Descent
-  * ***Momentum*** - SGD z pędem
+  * ***Momentum*** - SGD z pędem (wykorzystaniem historii aktualizacji)
   * ***Nesterov Accelerated Gradient*** - SGD z pędem Nesterova
     * Szybka zbieżność
     * Minimalnie szybsza od *Momentum*
@@ -638,13 +625,13 @@ Po utworzeniu modelu należy go skompilować za pomocą metody ```compile()```. 
     * Wariancje  *Adam*:
       * **Nadam** (Adam + Nesterov) - Generalnie jest lepsza od *Adam*
   * ***RMSProp*** - Zbiera gradienty tylko z najwcześniejszych iteracji
-    * Wiele lepszy niż *AdGrad*
+    * Wiele lepszy niż *AdaGrad*
     * **Problemy *Adaptive estimation methods***
       * M. in. Adam, Nadam, RMSProp, Adagrad
       * Mogą źle generalizować zbiory danych
       * Jak są jakieś problemy użyj *Nesterov Accelerated Gradient* 
 
-* ```loss```: Określa **funkcję straty**, która jest używana do oceny odchylenia między przewidywaniami modelu a rzeczywistymi wartościami. Przykładowe funkcje straty to 'mean_squared_error', 'categorical_crossentropy', 'binary_crossentropy' itp. Wybór odpowiedniej funkcji straty zależy od rodzaju problemu i rodzaju wyjścia modelu.
+* ```loss```: Określa **funkcję straty**, która jest używana przez optymalizator do oceny odchylenia między przewidywaniami modelu a rzeczywistymi wartościami. Przykładowe funkcje straty to 'mean_squared_error', 'categorical_crossentropy', 'binary_crossentropy'. Wybór odpowiedniej funkcji straty zależy od rodzaju problemu i rodzaju wyjścia modelu.
 
 * ```metrics```: Określa **metryki**, które będą używane do oceny wydajności modelu. Przykładowe metryki to 'accuracy', 'precision', 'recall', 'mean_absolute_error' itp. Metryki służą do monitorowania wydajności modelu podczas uczenia i ewaluacji.
 
@@ -662,9 +649,9 @@ A następnie wytrenować model za pomocą metody ```fit()```. Metoda ta przyjmuj
 
 * ```y```: **Dane wyjściowe** (etykiety) odpowiadające danym wejściowym x.
 
-* ```batch_size```: Określa liczbę próbek, które są przetwarzane jednocześnie przez model w trakcie jednej iteracji.
+* ```batch_size```: Określa liczbę próbek, które są przetwarzane jednocześnie przez model w trakcie jednej iteracji. Mniejsza - zapewnia generalizację, większa - szybsze uczenie, ale ma tendencję do overfittingu.
 
-* ```epochs```: Określa liczbę **epok uczenia** - pełnych przebiegów przez zbiór treningowy. Każda epoka oznacza jedno przejście przez cały zbiór treningowy.
+* ```epochs```: Określa liczbę **epok uczenia** - pełnych przebiegów przez zbiór treningowy. Każda epoka oznacza jedno przejście przez cały zbiór treningowy. Mniejsza - ma tendencję do underfittingu, większa - ma tendencję do overfittingu.
 
 * ```validation_data```: **Dane walidacyjne** używane do oceny wydajności modelu na każdej epoce. Może to być krotka (x_val, y_val) zawierająca dane wejściowe i oczekiwane wyjście dla danych walidacyjnych.
 
@@ -839,7 +826,7 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 ### Segmentacja semantyczna
   
   * Segmentacja semantyczna jest problemem, który polega na przypisaniu każdemu pikselowi obrazu etykiety, która reprezentuje klasę, do której należy dany piksel
-  * Można w tym celu stosować architekturę U-Net, która składa się z warstw konwolucyjnych, warstw poolingowych i warstw dekonwolucyjnych twojącą symetryczną strukturę w kształcie litery U.
+  * Można w tym celu stosować architekturę U-Net, która składa się z warstw konwolucyjnych, warstw poolingowych i warstw dekonwolucyjnych tworzącą symetryczną strukturę w kształcie litery U.
   * Różne obiekty tej samej klasy nie są rozróżnialne.
 
 ### Metryki:
@@ -863,21 +850,27 @@ Przykłady funkcji strat zostały przedstawione na początku dokumentu.
 
 Podstawowym elementem RNN jest komórka rekurencyjna, która ma stan wewnętrzny przechowujący informacje z poprzednich **kroków czasowych (ramek)**. W każdym kroku czasowym komórka otrzymuje dane wejściowe oraz stan wewnętrzny (z poprzedniego kroku) i generuje nowy stan wewnętrzny oraz dane wyjściowe. Ten proces jest powtarzany dla każdego kroku czasowego.
 
-Istnieje kilka różnych typów RNN, takich jak **SimpleRNN**, **LSTM** (Long Short-Term Memory), **GRU** (Gated Recurrent Unit) i **Bidirectional RNN**, które różnią się w sposobie zarządzania i aktualizacji stanu wewnętrznego. Na przykład, LSTM wprowadza bramki, które kontrolują przepływ informacji, pozwalając na efektywne uczenie się zależności na różnych skalach czasowych i unikanie problemu zanikającego gradientu.
+Istnieje kilka różnych typów komórek RNN, takich jak **SimpleRNN**, **LSTM** (Long Short-Term Memory), **GRU** (Gated Recurrent Unit) i **Bidirectional RNN**, które różnią się w sposobie zarządzania i aktualizacji stanu wewnętrznego. Na przykład, LSTM wprowadza bramki, które kontrolują przepływ informacji, pozwalając na efektywne uczenie się zależności na różnych skalach czasowych i unikanie problemu zanikającego gradientu.
 
 ## Rodzaje RNN ze względu na rodzaj danych wejściowych/wyjściowych
 
 ### Sequence to sequence network
 
-Pobiera sekwencje danych wejściowych i generuje sekwencję przewidywanych danych.
+Stosowana, gdy input i output mają różne (nieokreślone) długości. Pobiera sekwencje danych wejściowych i generuje sekwencję przewidywanych danych.
+
+Np. rozpoznawanie mowy, podsumowanie tekstu.
 
 ### Vector to sequence network (**Dekoder**)
 
 Podaje ten sam wektor danych wejściowych w każdym kroku czasowym i generuje sekwencję przewidywanych danych.
 
+Np. Podpisywanie obrazów.
+
 ### Sequence to vector network (**Enkonder**)
 
 Podaj sekwencję danych wejściowych i zignoruj wygenerowaną sekwencję przewidywanych danych poza ostatnią wartością.
+
+Np. Rozpoznawanie emocji w tekście, generownaie obraów na podstawie opisu.
 
 ## Działanie RNN w kilku krokach:
 
@@ -951,14 +944,14 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 
 ![Architektura sieci Enkoder-Dekoder](assets/ecoder-decoder.png)
 
-## Enkoder
+## Rola enkodera
 
 * Na wejście pobiera sekwencję o zmiennej długości.
 * W przypadku przetwarzania języka pobiera zdanie jako input i zwraca sekwencję liczb.
 * Zbudowana z kilku warstw rekurencyjnych.
   * Sieć rozumie kontekst i zależności między słowami w zdaniu.
 
-## Dekoder
+## Rola dekodera
 
 * Działa jak model języka warunkowego.
 * Jako wejście pobiera sekwencję zwracaną przez enkoder.
