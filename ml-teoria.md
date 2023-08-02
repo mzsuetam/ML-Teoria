@@ -938,9 +938,44 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 
 ![Przykłady zbiorów danych posiadających sezonowość](assets/seasonality.png)
 
-* Sezonowością nazywamy regularną, okresową zmianę w śreniej badanej wartości.
+* Sezonowością nazywamy regularną, okresową zmianę w średniej badanej wartości.
 * Sezonowość powiązana jest z czasem. Możemy zaobserwować sezonowość w przeciągu dnia, tygodnia, roku itd.
 * Sezonowość jest napędzana cyklami świata przyrody (pory roku, cykl dnia/nocy) lub konwencjami zachowań społecznych dotyczących dat i godzin (Święta, czwartki studenckie).
+
+## LSTM Long Short Term Memory
+
+* Specjalny rodzaj RNN, będący w stanie nauczyć się długotrwałych zależności.
+* Ich głównym zadaniem jest pamiętanie informacji.
+* LSTM ma podobną architekturę do RNN, różnica leży w strukturze samego modułu.
+  * Nie posiadają jak RNN pojedyńczej sieci neuronowej, lecz 4, które oddziaływują ze sobą w specyficzny sposób.
+* Pojedyńczy moduł możemy porównać do mini maszyny stanowej, gdzie bramki mają wagi, które są uczone podczas procesu trenowania.
+* Sieć LSTM oczekuje, że dane wejściowe zostaną podane w specyficznym formacie, w następującej formie <ins>*[próbki, krok czasowy, cechy]*</ins>
+
+![Architektura modułu LSTM.](assets/lstm.png)
+
+![Wytłumaczenie symboli z powyższego schematu.](assets/lstm2.png)
+
+### Główna idea stojąca za LSTM
+
+* Najważniejszym elementem LSTM jest horyzontalna linia, która jest wspólna dla wszystkich modułów tej sieci.
+  * Dzięki tej lini informacja w bardzo prosty sposób może się przemieszczać bez żadnej modyfikacji.
+
+![](assets/core-lstm.png)
+
+* LSTM może usuwać lub dodawać informacje do stanu modułu (Ta horyzontalna linia), dzięki regulacji ***bramek***.
+  * ***Bramki*** dają możliwość informacji przejść dalej. Składają się z funkcji *sigmoid* oraz warstwy sieci neuronowej.
+    * Stosujemy *sigmoid* ponieważ daje nam zbiór wartości między 0 a 1. Wartość 0 oznacza nie przepuszczenie żadnej informacji przez bramkę, a 1 oznacza 'pełne otwarcie bramki'.
+  * LSTM posiada 3 takie bramki.
+
+### Bramki LSTM
+
+* ***Forget Gate***
+  * Decyduje jaka informacja zostanie przekazana dalej.
+* ***Input Gate*** 
+  * Decyduje jakie wartości z danych wejściowych mają wpływ na stan pamięci.
+* ***Output Gate***
+  * Decycuje co ma moduł zwrócić w zależności od danych wejściowych i stanu pamięci.
+
 
 # Sieci Enkoder-Dekoder
 
@@ -1044,7 +1079,7 @@ Dokładnie reprezentują ciągi o zmiennej długości przez wektory o stałej d�
 
 ## Soft Attention i Hard Attention
 
-* W "*Logika stojąca za mechanizmem uwagi*" mamy przedstawiony przykład *Hard Attention* z tego powodu, iż model nie używa wszystkich danych wejściowych do obliczenia *Uwagi*.
+* W "*Logika stojąca za mechanizmem uwagi*" mamy przedstawiony przykład *Hard Attention* z tego powodu, że model nie używa wszystkich danych wejściowych do obliczenia *Uwagi*.
   * To które dane pomijamy w obliczaniu uwagi jest zadaniem sieci neuronowej.
 * W przypadku *Soft Attention* wszystkie dane wejściowe są uwzględniane w obliczaniu Uwagi.
 * *Soft Attention* jest bardziej popularną opcją przez większą efektywność procesu propagacji wstecznej.
