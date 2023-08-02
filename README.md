@@ -1,4 +1,10 @@
-# ML-Teoria
+![](assets/logo.png)
+
+# Uczenie Maszynowe - Teoria
+
+### Autorzy
+
+The Scholar Squad
 
 ### Abstrakt
 
@@ -11,4 +17,4 @@ Będziecie w stanie wybrać odpowiedni algorytm uczenia maszynowego w zależnoś
 Ponadto, kurs ten obejmuje tematy związane z walidacją modelu i rozwiązywaniem typowych kłopotów, które mogą Wam się przyplątać podczas trenowania modelu.
 Zdobędziecie umiejętność przeprowadzania walidacji modelu oraz rozwiązywania występujących bolączek.
 
-[Cały dokument](/ml-teoria.pdf)
+[Przeczytaj cały dokument](/ml-teoria.pdf)
